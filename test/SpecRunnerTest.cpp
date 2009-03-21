@@ -16,10 +16,24 @@
 
 #include "UnitTest++.h"
 #include "SpecRunner.h"
+#include "OutputStreamStub.h"
+#include "Reporter.h"
+#include "JUnitReporter.h"
+#include <boost/type_traits.hpp>
 
 using CppSpec::SpecRunner;
+using CppSpec::Reporter;
+using CppSpec::JUnitReporter;
+
+template<class T, class U>
+bool isSame(U) {
+    return boost::is_same<T, U>::value;
+}
 
 TEST(foo) {
-    SpecRunner specRunner;
-
+    char* args[] = {"-o", "junit"};
+    SpecRunner specRunner(1, args);
+    OutputStreamStub output;
+    Reporter* reporter = specRunner.createReporter(output);
+    CHECK(isSame<JUnitReporter>(reporter));
 }

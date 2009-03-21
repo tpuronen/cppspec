@@ -43,11 +43,7 @@ private:
     const std::vector<std::string>& specificationsToRun;
 };
 
-SpecRunner::SpecRunner() {
-}
-
-void SpecRunner::runSpecifications(int argc, char* argv[]) {
-	std::vector<std::string> specificationsToRun;
+SpecRunner::SpecRunner(int argc, char* argv[]) {
 	boost::program_options::options_description options("Options");
 	options.add_options()
 		("output,o", boost::program_options::value<std::string>(), "define output format. Allowed values: junit console cute")
@@ -55,19 +51,20 @@ void SpecRunner::runSpecifications(int argc, char* argv[]) {
 		("report-dir", boost::program_options::value<std::string>(), "directory where JUnit reports are created")
 		("specification,s", boost::program_options::value<std::vector<std::string> >(&specificationsToRun), "specification to be run, if multiple specifications will be run, the option can be repeated")
 		("help,h", "show help");
-	boost::program_options::variables_map args;
-	boost::program_options::store(boost::program_options::parse_command_line(argc, argv, options), args);
-	boost::program_options::notify(args);
+	arguments = new boost::program_options::variables_map();
+	boost::program_options::store(boost::program_options::parse_command_line(argc, argv, options), *arguments);
+	boost::program_options::notify(*arguments);
+    if(arguments->count("help")) {
+        std::cout << options << std::endl;
+        exit(0);
+    }
+}
 
-	if(args.count("help")) {
-		std::cout << options << std::endl;
-		return;
-	}
-
+void SpecRunner::runSpecifications() {
 	Needle::Binder::instance().bind<Timer>(new BoostTimer());
 
-	OutputStream* outputStream = createOutputStream(args);
-	Reporter* reporter = createReporter(args, *outputStream);
+	OutputStream* outputStream = createOutputStream();
+	Reporter* reporter = createReporter(*outputStream);
 
 	runSpecs(specificationsToRun, reporter);
 
@@ -75,21 +72,21 @@ void SpecRunner::runSpecifications(int argc, char* argv[]) {
 	delete outputStream;
 }
 
-OutputStream* SpecRunner::createOutputStream(boost::program_options::variables_map& /*args*/) {
+OutputStream* SpecRunner::createOutputStream() {
     return new ConsoleOutputStream();
 }
 
-Reporter* SpecRunner::createReporter(boost::program_options::variables_map& args, OutputStream& outputStream) {
-    if(args.count("output")) {
-    	const std::string& selectedReporter(args["output"].as<std::string>());
+Reporter* SpecRunner::createReporter(OutputStream& outputStream) {
+    if(arguments->count("output")) {
+    	const std::string& selectedReporter((*arguments)["output"].as<std::string>());
         if(selectedReporter == "junit") {
-			if(args.count("no-logs")) {
+			if(arguments->count("no-logs")) {
 				return new JUnitReporter();
 			}
 			else {
 				std::string reportPath(".");
-				if(args.count("report-dir")) {
-					reportPath = args["report-dir"].as<std::string>();
+				if(arguments->count("report-dir")) {
+					reportPath = (*arguments)["report-dir"].as<std::string>();
 				}
 				return new JUnitReporter(reportPath);
 			}

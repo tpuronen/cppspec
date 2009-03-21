@@ -18,20 +18,22 @@ class Reporter;
 
 class CppSpec_EXPORT SpecRunner {
 public:
-    SpecRunner();
+    SpecRunner(int argc, char* argv[]);
 
-    void runSpecifications(int argc, char* argv[]);
+    void runSpecifications();
+
+public:
+    OutputStream* createOutputStream();
+    Reporter* createReporter(OutputStream& outputStream);
+    void runSpecs(const std::vector<std::string>& specifications, Reporter* reporter);
 
 private:
-    OutputStream* createOutputStream(boost::program_options::variables_map& args);
-    Reporter* createReporter(boost::program_options::variables_map& args, OutputStream& outputStream);
-    void runSpecs(const std::vector<std::string>& specifications, Reporter* reporter);
+    boost::program_options::variables_map* arguments;
+    std::vector<std::string> specificationsToRun;
 
 private:
     SpecRunner(const SpecRunner&);
     SpecRunner& operator=(const SpecRunner&);
-
-    friend class SpecRunnerTest;
 };
 
 }
