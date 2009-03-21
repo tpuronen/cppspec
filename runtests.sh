@@ -1,4 +1,5 @@
 #!/bin/bash
+# Builds CppSpec and runs test measuring coverage
 pushd build
 make
 lcov -d test/ -z
