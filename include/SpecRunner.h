@@ -31,6 +31,7 @@ private:
     SpecRunner(const SpecRunner&);
     SpecRunner& operator=(const SpecRunner&);
 
+    friend class SpecRunnerTest;
 };
 
 }

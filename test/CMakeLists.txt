@@ -20,7 +20,7 @@ find_library(UNITTESTPP_LIBRARY NAMES UnitTest++)
 if(UNITTESTPP_INCLUDE_DIR AND UNITTESTPP_LIBRARY) 
 	include_directories(../include ${UNITTESTPP_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
 	set(CPPSPEC_SRCS ../src/SpecDoxReporter.cpp ../src/Matcher.cpp ../src/SpecificationRegistry.cpp ../src/SpecRunner.cpp ../src/BoostTimer.cpp ../src/CuteReporter.cpp
-	   ../src/JUnitReporter.cpp ../src/FileOutputStream.cpp ../src/ConsoleOutputStream.cpp)
+	   ../src/JUnitReporter.cpp ../src/FileOutputStream.cpp ../src/ConsoleOutputStream.cpp ../src/SpecRunner.cpp)
 
 	if(UNIX)
 		set(CMAKE_CXX_FLAGS  ${CMAKE_CXX_FLAGS} " -Wall -fprofile-arcs -ftest-coverage")
@@ -37,7 +37,7 @@ if(UNITTESTPP_INCLUDE_DIR AND UNITTESTPP_LIBRARY)
 	add_executable(CppSpecTest ${CPPSPEC_SRCS} main.cpp SpecDoxReporterTest.cpp BoostTimerTest.cpp SpecificationRegistryTest.cpp
 	   JUnitReporterTest.cpp InvokingTypeTest.cpp TypeHasStreamingOperatorTest.cpp VoidSpecification.cpp MatcherTest.cpp
 	   ExpectationTest.cpp InvocationTest.cpp ExceptionThrowingSpecificationTest.cpp CuteReporterTest.cpp SpecificationTest.cpp
-	   DummyReporter.cpp) 
+	   DummyReporter.cpp SpecRunnerTest.cpp) 
 	target_link_libraries(CppSpecTest ${UNITTESTPP_LIBRARY} ${EXTRA_LIBS} ${Boost_DATE_TIME_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY}
 		${Boost_FILESYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY})
 endif(UNITTESTPP_INCLUDE_DIR AND UNITTESTPP_LIBRARY) 
