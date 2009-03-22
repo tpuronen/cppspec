@@ -20,6 +20,7 @@
 #include "Reporter.h"
 #include "JUnitReporter.h"
 #include "SpecDoxReporter.h"
+#include "CuteReporter.h"
 
 #include <iostream>
 
@@ -27,6 +28,7 @@ using CppSpec::SpecRunner;
 using CppSpec::Reporter;
 using CppSpec::JUnitReporter;
 using CppSpec::SpecDoxReporter;
+using CppSpec::CuteReporter;
 
 template<class ExpectedReporterType>
 void checkThatGivenReporterIsCreated(SpecRunner& specRunner) {
@@ -44,7 +46,19 @@ TEST(SpecDoxReporterIsReturnedByDefault) {
 }
 
 TEST(CreateReporterReturnsJUnitReporterIfGivenInArguments) {
-    char* args[] = {"test", "-o", "junit"};
-    SpecRunner specRunner(3, args);
+    char* args[] = {"test", "-o", "junit", "--report-dir", "foo"};
+    SpecRunner specRunner(5, args);
     checkThatGivenReporterIsCreated<JUnitReporter>(specRunner);
+}
+
+TEST(CreateReporterReturnsJUnitReporterWithoutLogFilesIfGivenInArguments) {
+    char* args[] = {"test", "-o", "junit", "--no-logs"};
+    SpecRunner specRunner(4, args);
+    checkThatGivenReporterIsCreated<JUnitReporter>(specRunner);
+}
+
+TEST(CreateReporterReturnsCuteReporterIfGivenInArguments) {
+    char* args[] = {"test", "-o", "cute"};
+    SpecRunner specRunner(3, args);
+    checkThatGivenReporterIsCreated<CuteReporter>(specRunner);
 }
