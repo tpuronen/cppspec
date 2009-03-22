@@ -20,8 +20,6 @@
 #include "Reporter.h"
 #include "JUnitReporter.h"
 #include "SpecDoxReporter.h"
-#include <boost/type_traits.hpp>
-#include <typeinfo>
 
 #include <iostream>
 

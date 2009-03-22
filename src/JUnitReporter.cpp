@@ -59,11 +59,8 @@ void JUnitReporter::specificationEnded(const std::string& /*specName*/) {
 	int pass(0);
 	int fails(0);
 	OutputStream* output = createOutputStream();
-
 	calculateResults(pass, fails);
-
 	std::string time = currentTime();
-
 	(*output) << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << "\n";
 	(*output) << "<testsuite failures=\"" << fails << "\" name=\"" << specificationName << "\" tests=\"" << pass + fails << "\" time=\"" << timer->durationFromSpecificationStart() << "\" timestamp=\"" << time << "\">" << "\n";
 	printSpecResults(*output);
