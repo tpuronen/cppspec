@@ -60,6 +60,10 @@ SpecRunner::SpecRunner(int argc, char* argv[]) {
     }
 }
 
+SpecRunner::~SpecRunner() {
+    delete arguments;
+}
+
 void SpecRunner::runSpecifications() {
 	Needle::Binder::instance().bind<Timer>(new BoostTimer());
 

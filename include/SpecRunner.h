@@ -19,7 +19,9 @@ class Reporter;
 class CppSpec_EXPORT SpecRunner {
 public:
     SpecRunner(int argc, char* argv[]);
+    virtual ~SpecRunner();
 
+public:
     void runSpecifications();
 
 public:

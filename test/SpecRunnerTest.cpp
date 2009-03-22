@@ -19,21 +19,34 @@
 #include "OutputStreamStub.h"
 #include "Reporter.h"
 #include "JUnitReporter.h"
+#include "SpecDoxReporter.h"
 #include <boost/type_traits.hpp>
+#include <typeinfo>
+
+#include <iostream>
 
 using CppSpec::SpecRunner;
 using CppSpec::Reporter;
 using CppSpec::JUnitReporter;
+using CppSpec::SpecDoxReporter;
 
-template<class T, class U>
-bool isSame(U) {
-    return boost::is_same<T, U>::value;
-}
-
-TEST(foo) {
-    char* args[] = {"-o", "junit"};
-    SpecRunner specRunner(1, args);
+template<class ExpectedReporterType>
+void checkThatGivenReporterIsCreated(SpecRunner& specRunner) {
     OutputStreamStub output;
     Reporter* reporter = specRunner.createReporter(output);
-    CHECK(isSame<JUnitReporter>(reporter));
+    ExpectedReporterType* expectedReporterType = dynamic_cast<ExpectedReporterType*>(reporter);
+    CHECK(expectedReporterType != NULL);
+    delete reporter;
+}
+
+TEST(SpecDoxReporterIsReturnedByDefault) {
+    char* args[] = {"test"};
+    SpecRunner specRunner(1, args);
+    checkThatGivenReporterIsCreated<SpecDoxReporter>(specRunner);
+}
+
+TEST(CreateReporterReturnsJUnitReporterIfGivenInArguments) {
+    char* args[] = {"test", "-o", "junit"};
+    SpecRunner specRunner(3, args);
+    checkThatGivenReporterIsCreated<JUnitReporter>(specRunner);
 }
