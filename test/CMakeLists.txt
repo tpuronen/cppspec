@@ -20,7 +20,7 @@ find_library(UNITTESTPP_LIBRARY NAMES UnitTest++)
 if(UNITTESTPP_INCLUDE_DIR AND UNITTESTPP_LIBRARY) 
 	include_directories(../include ${UNITTESTPP_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
 	set(CPPSPEC_SRCS ../src/SpecDoxReporter.cpp ../src/Matcher.cpp ../src/SpecificationRegistry.cpp ../src/SpecRunner.cpp ../src/BoostTimer.cpp ../src/CuteReporter.cpp
-	   ../src/JUnitReporter.cpp ../src/FileOutputStream.cpp ../src/ConsoleOutputStream.cpp ../src/SpecRunner.cpp)
+	   ../src/JUnitReporter.cpp ../src/FileOutputStream.cpp ../src/ConsoleOutputStream.cpp)
 
 	if(UNIX)
 		set(CMAKE_CXX_FLAGS  ${CMAKE_CXX_FLAGS} " -Wall -fprofile-arcs -ftest-coverage")

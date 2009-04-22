@@ -22,43 +22,47 @@
 #include "SpecDoxReporter.h"
 #include "CuteReporter.h"
 
-#include <iostream>
-
 using CppSpec::SpecRunner;
 using CppSpec::Reporter;
 using CppSpec::JUnitReporter;
 using CppSpec::SpecDoxReporter;
 using CppSpec::CuteReporter;
 
-template<class ExpectedReporterType>
-void checkThatGivenReporterIsCreated(SpecRunner& specRunner) {
-    OutputStreamStub output;
-    Reporter* reporter = specRunner.createReporter(output);
-    ExpectedReporterType* expectedReporterType = dynamic_cast<ExpectedReporterType*>(reporter);
-    CHECK(expectedReporterType != NULL);
-    delete reporter;
+namespace CppSpec {
+class SpecRunnerTestAccessor {
+public:
+    template<class ExpectedReporterType>
+    void checkThatGivenReporterIsCreated(SpecRunner& specRunner) {
+        OutputStreamStub output;
+        Reporter* reporter = specRunner.createReporter(output);
+        ExpectedReporterType* expectedReporterType = dynamic_cast<ExpectedReporterType*>(reporter);
+        CHECK(expectedReporterType != NULL);
+        delete reporter;
+    }
+};
 }
+using CppSpec::SpecRunnerTestAccessor;
 
 TEST(SpecDoxReporterIsReturnedByDefault) {
     char* args[] = {"test"};
     SpecRunner specRunner(1, args);
-    checkThatGivenReporterIsCreated<SpecDoxReporter>(specRunner);
+    SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<SpecDoxReporter>(specRunner);
 }
 
 TEST(CreateReporterReturnsJUnitReporterIfGivenInArguments) {
     char* args[] = {"test", "-o", "junit", "--report-dir", "foo"};
     SpecRunner specRunner(5, args);
-    checkThatGivenReporterIsCreated<JUnitReporter>(specRunner);
+    SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<JUnitReporter>(specRunner);
 }
 
 TEST(CreateReporterReturnsJUnitReporterWithoutLogFilesIfGivenInArguments) {
     char* args[] = {"test", "-o", "junit", "--no-logs"};
     SpecRunner specRunner(4, args);
-    checkThatGivenReporterIsCreated<JUnitReporter>(specRunner);
+    SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<JUnitReporter>(specRunner);
 }
 
 TEST(CreateReporterReturnsCuteReporterIfGivenInArguments) {
     char* args[] = {"test", "-o", "cute"};
     SpecRunner specRunner(3, args);
-    checkThatGivenReporterIsCreated<CuteReporter>(specRunner);
+    SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<CuteReporter>(specRunner);
 }

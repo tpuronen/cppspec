@@ -23,8 +23,9 @@ public:
 
 public:
     void runSpecifications();
+    friend class SpecRunnerTestAccessor;
 
-public:
+private:
     OutputStream* createOutputStream();
     Reporter* createReporter(OutputStream& outputStream);
     void runSpecs(const std::vector<std::string>& specifications, Reporter* reporter);

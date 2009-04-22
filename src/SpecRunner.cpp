@@ -23,7 +23,6 @@
 #include "BoostTimer.h"
 #include "ConsoleOutputStream.h"
 #include "Needle/Binder.h"
-#include <memory.h>
 #include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
 
@@ -83,14 +82,14 @@ OutputStream* SpecRunner::createOutputStream() {
 
 Reporter* SpecRunner::createReporter(OutputStream& outputStream) {
     if (arguments->count("output")) {
-        const std::string& selectedReporter((*arguments)["output"].as<std::string> ());
+        const std::string& selectedReporter((*arguments)["output"].as<std::string>());
         if (selectedReporter == "junit") {
             if (arguments->count("no-logs")) {
                 return new JUnitReporter();
             } else {
                 std::string reportPath(".");
                 if (arguments->count("report-dir")) {
-                    reportPath = (*arguments)["report-dir"].as<std::string> ();
+                    reportPath = (*arguments)["report-dir"].as<std::string>();
                 }
                 return new JUnitReporter(reportPath);
             }
@@ -103,11 +102,11 @@ Reporter* SpecRunner::createReporter(OutputStream& outputStream) {
 
 void SpecRunner::runSpecs(const std::vector<std::string>& specificationsToRun, Reporter* reporter) {
     ShouldBeRun shouldBeRun(specificationsToRun);
-    BOOST_FOREACH(Runnable* specification, SpecificationRegistry::instance().getSpecifications())
-{    if(shouldBeRun(specification->getName())) {
-        (*specification)(reporter);
+    BOOST_FOREACH(Runnable* specification, SpecificationRegistry::instance().getSpecifications()) {
+        if(shouldBeRun(specification->getName())) {
+            (*specification)(reporter);
+        }
     }
-}
 }
 
 }
