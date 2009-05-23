@@ -160,5 +160,6 @@ private:
 }
 
 bool operator==(const std::exception& lhs, const std::exception& rhs);
+std::ostream& operator<<(std::ostream& out, const std::exception& e);
 
 #endif /* INVOCATION_H_ */
