@@ -31,7 +31,7 @@ SUITE(EmptySpecification) {
 
     TEST(hasCountOfZero) {
         EmptyTestSpec spec;
-        CHECK_EQUAL(0, spec.getBehaviorCount());
+        CHECK_EQUAL((size_t)0, spec.getBehaviorCount());
     }
 };
 
@@ -93,7 +93,7 @@ struct SpecWithBehavioursTest {
 
 SUITE(SpecificationWithBehaviors) {
     TEST_FIXTURE(SpecWithBehavioursTest, hasCount) {
-        CHECK_EQUAL(7, spec->getBehaviorCount());
+        CHECK_EQUAL((size_t)7, spec->getBehaviorCount());
     }
 
     TEST_FIXTURE(SpecWithBehavioursTest, canCallContextForVoid) {
