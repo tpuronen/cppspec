@@ -159,4 +159,6 @@ private:
 
 }
 
+bool operator==(const std::exception& lhs, const std::exception& rhs);
+
 #endif /* INVOCATION_H_ */

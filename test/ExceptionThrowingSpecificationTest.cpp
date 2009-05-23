@@ -183,3 +183,8 @@ TEST_FIXTURE(ExceptionThrowingSpecification, ThrowNonStreamable) {
     }
     CHECK(false);
 }
+
+TEST_FIXTURE(ExceptionThrowingSpecification, AssertStdExceptionTypeAndMessage) {
+    InvocationResult result = spec->invoking(&Test::throwDerived).should.raise.exception(Test::MyException());
+    CHECK(result.wasSuccess());
+}
