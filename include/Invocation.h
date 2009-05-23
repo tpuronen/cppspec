@@ -23,6 +23,8 @@
 #include <boost/mpl/if.hpp>
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/type_traits/add_reference.hpp>
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/bind.hpp>
 #include "TypeHasStreamingOperator.h"
 #include "TypeNameResolver.h"
 #include "InvocationResult.h"
@@ -61,38 +63,25 @@ public:
     }
 
     InvocationResult invoke(Expected expected) {
+        return internalInvoke(boost::lambda::_1 == expected, expected);
+    }
+
+    InvocationResult invokeWithExpectedMessage(const std::string& expectedMessage) {
+        return internalInvoke(boost::lambda::bind(&Invocation::toString<Expected>, this, boost::lambda::_1) == expectedMessage, expectedMessage);
+    }
+
+    template<class T, class E>
+    InvocationResult internalInvoke(T& expectedEquals, E expected) {
         InvocationResult result;
         try {
             invocation();
         }
         catch(typename boost::call_traits<Expected>::reference occured) {
-            if(occured == expected) {
+            if(expectedEquals(occured)) {
                 result.setSuccess();
                 return result;
             }
             result.setFailure(exceptionValuesNotMatchedMessage(expected, occured));
-            return result;
-        } catch(typename boost::add_reference<StandardOrNonThrownExceptionType>::type occured) {
-            result.setFailure(standardExceptionThrown(occured));
-            return result;
-        } catch(...) {
-            result.setFailure(wrongExceptionThrownMessage());
-            return result;
-        }
-        result.setFailure(noExceptionThrownMessage());
-        return result;
-    }
-
-    InvocationResult invokeWithExpectedMessage(const std::string& expectedMessage) {
-        InvocationResult result;
-        try {
-            invocation();
-        } catch (typename boost::call_traits<Expected>::reference occured) {
-            if (toString(occured) == expectedMessage) {
-                result.setSuccess();
-                return result;
-            }
-            result.setFailure(exceptionValuesNotMatchedMessage(expectedMessage, toString(occured)));
             return result;
         } catch(typename boost::add_reference<StandardOrNonThrownExceptionType>::type occured) {
             result.setFailure(standardExceptionThrown(occured));
@@ -152,11 +141,11 @@ private:
 
     template<class T>
     std::string toString(T t) const {
-        return toString<T>(t, CheckIf<TypeHasStreamingOperator<T>::result>());
+        return toStringImpl<T>(t, CheckIf<TypeHasStreamingOperator<T>::result>());
     }
 
     template<class T>
-    std::string toString(T t, CheckIf<true>) const {
+    std::string toStringImpl(T t, CheckIf<true>) const {
         try {
             return boost::lexical_cast<std::string>(t);
         } catch(boost::bad_lexical_cast&) {
@@ -165,7 +154,7 @@ private:
     }
 
     template<class T>
-    std::string toString(T t, CheckIf<false>) const {
+    std::string toStringImpl(T t, CheckIf<false>) const {
         return "** unstreamable class **";
     }
 
