@@ -99,7 +99,7 @@ protected:
         }
         catch (std::exception& e) {
             std::stringstream msg;
-            msg << "An exception " << e.what() << " occured in " << behavior.getName();
+            msg << TypeNameResolver().getTypename(e) << "[" << e.what() << "] occured in " << behavior.getName();
             reporter->behaviorFailed("", 0, msg.str());
         }
         catch (...) {

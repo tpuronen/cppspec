@@ -72,12 +72,32 @@ public:
             }
             result.setFailure(exceptionValuesNotMatchedMessage(expected, occured));
             return result;
-        }
-        catch(typename boost::add_reference<StandardOrNonThrownExceptionType>::type occured) {
+        } catch(typename boost::add_reference<StandardOrNonThrownExceptionType>::type occured) {
             result.setFailure(standardExceptionThrown(occured));
             return result;
+        } catch(...) {
+            result.setFailure(wrongExceptionThrownMessage());
+            return result;
         }
-        catch(...) {
+        result.setFailure(noExceptionThrownMessage());
+        return result;
+    }
+
+    InvocationResult invokeWithExpectedMessage(const std::string& expectedMessage) {
+        InvocationResult result;
+        try {
+            invocation();
+        } catch (typename boost::call_traits<Expected>::reference occured) {
+            if (toString(occured) == expectedMessage) {
+                result.setSuccess();
+                return result;
+            }
+            result.setFailure(exceptionValuesNotMatchedMessage(expectedMessage, toString(occured)));
+            return result;
+        } catch(typename boost::add_reference<StandardOrNonThrownExceptionType>::type occured) {
+            result.setFailure(standardExceptionThrown(occured));
+            return result;
+        } catch(...) {
             result.setFailure(wrongExceptionThrownMessage());
             return result;
         }

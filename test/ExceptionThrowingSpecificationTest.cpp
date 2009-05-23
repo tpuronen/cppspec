@@ -27,6 +27,11 @@ public:
 	    const char* what() const throw() {return "MyException";}
 	};
 
+	class RuntimeException : public std::runtime_error {
+	public:
+	    explicit RuntimeException(const std::string& message) : std::runtime_error(message) {}
+	};
+
 	class NonStreamable {
 	public:
 		bool operator==(const NonStreamable&) {
@@ -44,6 +49,10 @@ public:
 
 	void throwDerived() {
 		throw MyException();
+	}
+
+	void throwRuntimeException() {
+	    throw RuntimeException("Something terrible happened");
 	}
 
 	void throwString() {
@@ -186,5 +195,10 @@ TEST_FIXTURE(ExceptionThrowingSpecification, ThrowNonStreamable) {
 
 TEST_FIXTURE(ExceptionThrowingSpecification, AssertStdExceptionTypeAndMessage) {
     InvocationResult result = spec->invoking(&Test::throwDerived).should.raise.exception(Test::MyException());
+    CHECK(result.wasSuccess());
+}
+
+TEST_FIXTURE(ExceptionThrowingSpecification, AssertStdExceptionTypeAndMessage2) {
+    InvocationResult result = spec->invoking(&Test::throwRuntimeException).should.raise.exception<Test::RuntimeException>("Something terrible happened");
     CHECK(result.wasSuccess());
 }
