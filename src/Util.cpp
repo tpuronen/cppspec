@@ -16,6 +16,7 @@
 
 #include <stdexcept>
 #include <cstring>
+#include <string>
 
 bool operator==(const std::exception& lhs, const std::exception& rhs) {
     return ::strcmp(lhs.what(), rhs.what()) == 0;
