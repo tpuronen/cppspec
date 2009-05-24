@@ -67,7 +67,7 @@ public:
     }
 
     InvocationResult invokeWithExpectedMessage(const std::string& expectedMessage) {
-        return internalInvoke(boost::lambda::bind(&Invocation::toString<Expected>, this, boost::lambda::_1) == expectedMessage, expectedMessage);
+        return internalInvoke(boost::bind(&Invocation::toString<Expected>, this, boost::lambda::_1) == expectedMessage, expectedMessage);
     }
 
     template<class T, class E>
