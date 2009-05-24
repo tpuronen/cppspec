@@ -71,6 +71,7 @@ public:
         return internalInvoke(boost::bind(&Invocation::toString<Expected>, this, boost::lambda::_1) == expectedMessage, expectedMessage);
     }
 
+private:
     template<class T, class E>
     InvocationResult internalInvoke(T expectedEquals, E expected) {
         InvocationResult result;
@@ -95,7 +96,6 @@ public:
         return result;
     }
 
-private:
     std::string noExceptionThrownMessage() const {
         std::string description("Expected ");
         description += TypeNameResolver().getTypename<Expected>();
