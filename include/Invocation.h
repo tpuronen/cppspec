@@ -29,7 +29,6 @@
 #include "TypeNameResolver.h"
 #include "InvocationResult.h"
 
-
 namespace CppSpec {
 
 template<class Expected>
@@ -46,21 +45,7 @@ public:
     explicit Invocation(boost::function<void()> invocation) : invocation(invocation) {}
 
     InvocationResult invoke() {
-        InvocationResult result;
-        try {
-            invocation();
-        } catch(typename boost::call_traits<Expected>::param_type) {
-            result.setSuccess();
-            return result;
-        } catch(typename boost::add_reference<StandardOrNonThrownExceptionType>::type occured) {
-            result.setFailure(standardExceptionThrown(occured));
-            return result;
-        } catch(...) {
-            result.setFailure(wrongExceptionThrownMessage());
-            return result;
-        }
-        result.setFailure(noExceptionThrownMessage());
-        return result;
+        return internalInvoke(boost::lambda::constant(true), 0);
     }
 
     InvocationResult invoke(Expected expected) {
