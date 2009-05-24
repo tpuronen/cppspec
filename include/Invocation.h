@@ -24,10 +24,11 @@
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/type_traits/add_reference.hpp>
 #include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp>
+#include <boost/bind.hpp>
 #include "TypeHasStreamingOperator.h"
 #include "TypeNameResolver.h"
 #include "InvocationResult.h"
+
 
 namespace CppSpec {
 
@@ -71,7 +72,7 @@ public:
     }
 
     template<class T, class E>
-    InvocationResult internalInvoke(T& expectedEquals, E expected) {
+    InvocationResult internalInvoke(T expectedEquals, E expected) {
         InvocationResult result;
         try {
             invocation();
