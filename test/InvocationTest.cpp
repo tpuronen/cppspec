@@ -26,7 +26,11 @@ void methodThrowingInt() {
 }
 
 void methodThrowingStdException() {
-    throw std::exception();
+    class stdexception : public std::exception {
+    public:
+        const char* what() const throw() {return "std::exception";}
+    };
+    throw stdexception();
 }
 
 void nonThrowingMethod() {}
