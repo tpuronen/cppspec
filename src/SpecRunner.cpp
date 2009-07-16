@@ -35,8 +35,8 @@ public:
     }
 
     bool operator()(const std::string& name) {
-        return specificationsToRun.empty() || std::find(specificationsToRun.begin(), specificationsToRun.end(), name)
-                != specificationsToRun.end();
+        return specificationsToRun.empty() ||
+            std::find(specificationsToRun.begin(), specificationsToRun.end(), name) != specificationsToRun.end();
     }
 
 private:
@@ -65,7 +65,7 @@ SpecRunner::~SpecRunner() {
 }
 
 void SpecRunner::runSpecifications() {
-    Needle::Binder::instance().bind<Timer> (new BoostTimer());
+    Needle::Binder::instance().bind<Timer>(new BoostTimer());
 
     OutputStream* outputStream = createOutputStream();
     Reporter* reporter = createReporter(*outputStream);

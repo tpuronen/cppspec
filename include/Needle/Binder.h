@@ -29,7 +29,8 @@ namespace Needle {
 
 class InterfaceNotBoundToImplementationException : public std::runtime_error {
 public:
-    InterfaceNotBoundToImplementationException(const std::string& description) : std::runtime_error(description) {}
+    InterfaceNotBoundToImplementationException(const std::string& description) :
+        std::runtime_error("Implementation for " + description + " is not bound.") {}
 };
 
 class Binder {
@@ -49,11 +50,8 @@ public:
         try {
             boost::shared_ptr<Interface> instance = boost::any_cast<boost::shared_ptr<Interface> >(bound.find(typeid(Interface).name())->second);
             return instance;
-        } catch (boost::bad_any_cast&) {
-            std::string description("Implementation for ");
-            description += NeedleTypeNameResolver().getTypename<Interface>();
-            description += " is not bound.";
-            throw InterfaceNotBoundToImplementationException(description);
+        } catch (boost::bad_any_cast& e) {
+            throw InterfaceNotBoundToImplementationException(NeedleTypeNameResolver().getTypename<Interface>());
         }
     }
 
