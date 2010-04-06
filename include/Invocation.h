@@ -53,7 +53,7 @@ public:
     }
 
     InvocationResult invokeWithExpectedMessage(const std::string& expectedMessage) {
-        return internalInvoke(boost::bind(&Invocation::toString<Expected>, this, boost::lambda::_1) == expectedMessage, expectedMessage);
+        return internalInvoke(boost::bind(&Invocation<Expected>::toString, this, boost::lambda::_1) == expectedMessage, expectedMessage);
     }
 
 private:
