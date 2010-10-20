@@ -50,7 +50,7 @@ public:
         try {
             boost::shared_ptr<Interface> instance = boost::any_cast<boost::shared_ptr<Interface> >(bound.find(typeid(Interface).name())->second);
             return instance;
-        } catch (boost::bad_any_cast& e) {
+        } catch (boost::bad_any_cast&) {
             throw InterfaceNotBoundToImplementationException(NeedleTypeNameResolver().getTypename<Interface>());
         }
     }
