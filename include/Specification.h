@@ -101,7 +101,7 @@ public: // Expectations, these are used through specify-macro
 	}
 
 public: // from Runnable
-	void operator()(Reporter* reporter) {
+	bool operator()(Reporter* reporter) {
 		reporter->specificationStarted(*this);
 		const int count(SpecificationBase<Derived>::behaviors.size());
 		for(int i = 0; i < count; ++i) {
@@ -111,6 +111,7 @@ public: // from Runnable
 			static_cast<Derived*>(this)->destroyContext();
 		}
 		reporter->specificationEnded(SpecificationBase<Derived>::getName());
+		return SpecificationBase<Derived>::failed;
 	}
 
 public: // Vocabulary
@@ -138,7 +139,7 @@ public:
     }
 
 public: // from Runnable
-    void operator()(Reporter* reporter) {
+    bool operator()(Reporter* reporter) {
         reporter->specificationStarted(*this);
         const int count(SpecificationBase<Derived>::behaviors.size());
         for(int i = 0; i < count; ++i) {
@@ -146,6 +147,7 @@ public: // from Runnable
             SpecificationBase<Derived>::executeBehavior(behavior, reporter);
         }
         reporter->specificationEnded(SpecificationBase<Derived>::getName());
+        return SpecificationBase<Derived>::failed;
     }
 
 public:

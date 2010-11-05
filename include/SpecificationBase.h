@@ -34,7 +34,7 @@ namespace CppSpec {
 template<class Derived>
 class SpecificationBase : public Runnable {
 public:
-    SpecificationBase() : behaviors(), name(TypeNameResolver().getTypename<Derived>()) {
+    SpecificationBase() : behaviors(), failed(false), name(TypeNameResolver().getTypename<Derived>()) {
         SpecificationRegistry::instance().addSpecification(this);
     }
 
@@ -95,14 +95,17 @@ protected:
             reporter->behaviorSucceeded();
         }
         catch (SpecifyFailedException& e) {
+            failed = true;
             reporter->behaviorFailed(e.file, e.line, e.message);
         }
         catch (std::exception& e) {
+            failed = true;
             std::stringstream msg;
             msg << TypeNameResolver().getTypename(e) << "[" << e.what() << "] occured in " << behavior.getName();
             reporter->behaviorFailed("", 0, msg.str());
         }
         catch (...) {
+            failed = true;
             std::stringstream msg;
             msg << "An exception occured in " << behavior.getName();
             reporter->behaviorFailed("", 0, msg.str());
@@ -128,6 +131,7 @@ private:
 protected:
     typedef std::vector<Functor*> BehaviorList;
     BehaviorList behaviors;
+    bool failed;
 
 private:
     SpecificationBase(const SpecificationBase&);

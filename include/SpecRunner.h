@@ -22,13 +22,13 @@ public:
     virtual ~SpecRunner();
 
 public:
-    void runSpecifications();
+    bool runSpecifications();
     friend class SpecRunnerTestAccessor;
 
 private:
     OutputStream* createOutputStream();
     Reporter* createReporter(OutputStream& outputStream);
-    void runSpecs(const std::vector<std::string>& specifications, Reporter* reporter);
+    bool runSpecs(const std::vector<std::string>& specifications, Reporter* reporter);
 
 private:
     boost::program_options::variables_map* arguments;

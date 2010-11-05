@@ -34,7 +34,7 @@ public:
 	/**
 	 * Execute behaviors of a specification
 	 */
-	virtual void operator()(Reporter* reporter) = 0;
+	virtual bool operator()(Reporter* reporter) = 0;
 
 	/**
 	 * Get the name of the specification.
