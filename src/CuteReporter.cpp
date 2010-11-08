@@ -20,7 +20,7 @@
 
 namespace CppSpec {
 
-CuteReporter::CuteReporter() : currentBehavior() {
+CuteReporter::CuteReporter() : currentBehavior(), failOccured(false) {
 }
 
 CuteReporter::~CuteReporter() {
@@ -45,6 +45,11 @@ void CuteReporter::behaviorSucceeded() {
 
 void CuteReporter::behaviorFailed(const std::string& file, int line, const std::string& description) {
 	std::cout << "\n#failure " << currentBehavior << " " << file << ":" << line << " " << description << std::endl;
+	failOccured = true;
+}
+
+bool CuteReporter::anyBehaviorFailed() const {
+	return failOccured;
 }
 
 }

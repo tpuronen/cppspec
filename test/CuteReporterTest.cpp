@@ -66,6 +66,7 @@ TEST_FIXTURE(CuteReporterTest, behaviorSucceeded) {
 	stream->str("");
 	reporter->behaviorSucceeded();
 	CHECK_EQUAL("\n#success emptyStackShouldThrowExceptionOnPop OK\n", stream->str());
+	CHECK(!reporter->anyBehaviorFailed());
 }
 
 TEST_FIXTURE(CuteReporterTest, behaviorFailed) {
@@ -74,4 +75,5 @@ TEST_FIXTURE(CuteReporterTest, behaviorFailed) {
 	stream->str("");
 	reporter->behaviorFailed("File.cpp", 135, "expected 1, but was 2");
 	CHECK_EQUAL("\n#failure emptyStackShouldThrowExceptionOnPop File.cpp:135 expected 1, but was 2\n", stream->str());
+	CHECK(reporter->anyBehaviorFailed());
 }

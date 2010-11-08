@@ -41,6 +41,7 @@ public: // from Reporter
 	void behaviorSucceeded();
 	void behaviorFailed(const std::string& file, int line, const std::string& description);
 	void specificationEnded(const std::string& specName);
+	bool anyBehaviorFailed() const;
 
 public:
 	struct Result {
@@ -73,6 +74,7 @@ private:
 	bool createLogFiles;
 	std::string reportDirectory;
 	Needle::Inject<Timer> timer;
+	bool failOccured;
 };
 
 }

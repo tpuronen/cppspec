@@ -33,6 +33,8 @@ public:
 
 	const SpecificationList& getSpecifications() const;
 
+	void clear();
+
 private:
 	explicit SpecificationRegistry();
 	SpecificationRegistry(const SpecificationRegistry&);

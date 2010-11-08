@@ -22,7 +22,7 @@ public:
     virtual ~SpecRunner();
 
 public:
-    void runSpecifications();
+    int runSpecifications();
     friend class SpecRunnerTestAccessor;
 
 private:

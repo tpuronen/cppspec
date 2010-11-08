@@ -25,11 +25,11 @@
 namespace CppSpec {
 
 JUnitReporter::JUnitReporter()
-: specificationName(), behaviorName(), behaviorResults(), createLogFiles(false), reportDirectory() {
+: specificationName(), behaviorName(), behaviorResults(), createLogFiles(false), reportDirectory(), failOccured(false) {
 }
 
 JUnitReporter::JUnitReporter(const std::string& reportDirectory)
-: specificationName(), behaviorName(), behaviorResults(), createLogFiles(true), reportDirectory(reportDirectory) {
+: specificationName(), behaviorName(), behaviorResults(), createLogFiles(true), reportDirectory(reportDirectory), failOccured(false) {
 }
 
 JUnitReporter::~JUnitReporter() {
@@ -53,6 +53,7 @@ void JUnitReporter::behaviorSucceeded() {
 
 void JUnitReporter::behaviorFailed(const std::string& file, int line, const std::string& description) {
 	behaviorResults.push_back(Result(behaviorName, description, false, timer->durationFromBehaviorStart(), file, line));
+	failOccured = true;
 }
 
 void JUnitReporter::specificationEnded(const std::string& /*specName*/) {
@@ -67,6 +68,10 @@ void JUnitReporter::specificationEnded(const std::string& /*specName*/) {
 	(*output) << "</testsuite>" << "\n";
 
 	delete output;
+}
+
+bool JUnitReporter::anyBehaviorFailed() const {
+	return failOccured;
 }
 
 OutputStream* JUnitReporter::createOutputStream() {

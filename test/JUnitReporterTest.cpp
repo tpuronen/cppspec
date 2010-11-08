@@ -64,11 +64,13 @@ SUITE(JUnitReporter) {
         reporter->behaviorSucceeded();
         reporter->specificationEnded(*name);
         CHECK(stream->str().find("failures=\"0\"") != std::string::npos);
+		CHECK(!reporter->anyBehaviorFailed());
     }
 
     TEST_FIXTURE(JUnitReporterTest, oneFail) {
         reporter->behaviorFailed("Foo.cpp", 10, "An exception occured");
         reporter->specificationEnded(*name);
         CHECK(stream->str().find("failures=\"1\"") != std::string::npos);
+		CHECK(reporter->anyBehaviorFailed());
     }
 }

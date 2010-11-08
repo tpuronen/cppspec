@@ -21,12 +21,16 @@
 #include "JUnitReporter.h"
 #include "SpecDoxReporter.h"
 #include "CuteReporter.h"
+#include "SpecificationRegistry.h"
+#include "Runnable.h"
 
 using CppSpec::SpecRunner;
 using CppSpec::Reporter;
 using CppSpec::JUnitReporter;
 using CppSpec::SpecDoxReporter;
 using CppSpec::CuteReporter;
+using CppSpec::SpecificationRegistry;
+using CppSpec::Runnable;
 
 namespace CppSpec {
 class SpecRunnerTestAccessor {
@@ -43,10 +47,16 @@ public:
 }
 using CppSpec::SpecRunnerTestAccessor;
 
-TEST(SpecDoxReporterIsReturnedByDefault) {
+SpecRunner* createSpecRunner() {
     char* args[] = {"test"};
-    SpecRunner specRunner(1, args);
-    SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<SpecDoxReporter>(specRunner);
+	SpecificationRegistry::instance().clear();
+    return new SpecRunner(1, args);
+}
+
+TEST(SpecDoxReporterIsReturnedByDefault) {
+	SpecRunner* specRunner = createSpecRunner();
+    SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<SpecDoxReporter>(*specRunner);
+	delete specRunner;
 }
 
 TEST(CreateReporterReturnsJUnitReporterIfGivenInArguments) {
@@ -65,4 +75,31 @@ TEST(CreateReporterReturnsCuteReporterIfGivenInArguments) {
     char* args[] = {"test", "-o", "cute"};
     SpecRunner specRunner(3, args);
     SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<CuteReporter>(specRunner);
+}
+
+TEST(ReturnZeroIfNoTestsExecuted) {
+    SpecRunner* specRunner = createSpecRunner();
+	CHECK_EQUAL(0, specRunner->runSpecifications());
+	delete specRunner;
+}
+
+struct DummyRunnable : public Runnable {
+	DummyRunnable() : name("dummy") {}
+	void operator()(Reporter* reporter) {
+		reporter->specificationStarted(*this);
+		reporter->behaviorStarted("failing dummy");
+		reporter->behaviorFailed(__FILE__, __LINE__, "dummy fail");
+		reporter->specificationEnded(name);
+	}
+	const std::string& getName() const {return name;}
+	unsigned int getBehaviorCount() const {return 0;}
+	const std::string name;
+};
+
+TEST(ReturnOneIfATestFails) {
+	SpecRunner* specRunner = createSpecRunner();
+	DummyRunnable runnable;
+	SpecificationRegistry::instance().addSpecification(&runnable);
+	CHECK_EQUAL(1, specRunner->runSpecifications());
+	delete specRunner;
 }

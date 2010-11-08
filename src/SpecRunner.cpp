@@ -64,7 +64,7 @@ SpecRunner::~SpecRunner() {
     delete arguments;
 }
 
-void SpecRunner::runSpecifications() {
+int SpecRunner::runSpecifications() {
     Needle::Binder::instance().bind<Timer>(new BoostTimer());
 
     OutputStream* outputStream = createOutputStream();
@@ -72,8 +72,11 @@ void SpecRunner::runSpecifications() {
 
     runSpecs(specificationsToRun, reporter);
 
+	bool anyFails(reporter->anyBehaviorFailed());
+
     delete reporter;
     delete outputStream;
+	return anyFails;
 }
 
 OutputStream* SpecRunner::createOutputStream() {

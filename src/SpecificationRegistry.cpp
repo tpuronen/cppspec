@@ -35,4 +35,8 @@ const SpecificationRegistry::SpecificationList& SpecificationRegistry::getSpecif
 	return specifications;
 }
 
+void SpecificationRegistry::clear() {
+	specifications.clear();
+}
+
 }

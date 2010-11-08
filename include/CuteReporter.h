@@ -33,6 +33,7 @@ public: // from Reporter
 	void behaviorSucceeded();
 	void behaviorFailed(const std::string& file, int line, const std::string& description);
 	void specificationEnded(const std::string& specName);
+	bool anyBehaviorFailed() const;
 
 private:
     CuteReporter(const CuteReporter&);
@@ -40,6 +41,7 @@ private:
 
 private:
 	std::string currentBehavior;
+	bool failOccured;
 };
 
 }

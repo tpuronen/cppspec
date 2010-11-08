@@ -31,6 +31,7 @@ public: // from Reporter
 	void behaviorSucceeded();
 	void behaviorFailed(const std::string&, int, const std::string& description);
 	void specificationEnded(const std::string& /*specName*/);
+	bool anyBehaviorFailed() const;
 
 public:
 	int succes;

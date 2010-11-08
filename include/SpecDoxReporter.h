@@ -34,6 +34,7 @@ public:
 	void behaviorSucceeded();
 	void behaviorFailed(const std::string& file, int line, const std::string& description);
 	void specificationEnded(const std::string& specName);
+	bool anyBehaviorFailed() const;
 
 private:
 	void resetCounters();
@@ -48,6 +49,7 @@ private:
 	int count;
 	int failedCount;
 	int successCount;
+	bool failOccured;
 };
 
 }

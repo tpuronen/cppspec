@@ -39,3 +39,7 @@ void DummyReporter::behaviorFailed(const std::string&, int, const std::string& d
 
 void DummyReporter::specificationEnded(const std::string& /*specName*/) {
 }
+
+bool DummyReporter::anyBehaviorFailed() const {
+	return failed != 0;
+}

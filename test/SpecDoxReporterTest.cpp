@@ -57,10 +57,18 @@ SUITE(SpecDoxReporter) {
     TEST_FIXTURE(SpecDoxReporterTest, behaviorSucceeded) {
         reporter->behaviorSucceeded();
         CHECK_EQUAL("\n", outputStream->written());
+		CHECK(!reporter->anyBehaviorFailed());
     }
 
     TEST_FIXTURE(SpecDoxReporterTest, behaviorFailed) {
         reporter->behaviorFailed("Foo.cpp", 10, "expected 1, but was 0");
         CHECK_EQUAL(", expected 1, but was 0 in Foo.cpp:10\n", outputStream->written());
+		CHECK(reporter->anyBehaviorFailed());
     }
+
+	TEST_FIXTURE(SpecDoxReporterTest, failureInformationIsRetainedBetweenSpecifications) {
+        reporter->behaviorFailed("Foo.cpp", 10, "expected 1, but was 0");
+		reporter->specificationStarted(runnable);
+		CHECK(reporter->anyBehaviorFailed());
+	}
 }

@@ -33,6 +33,7 @@ public:
 	virtual void behaviorSucceeded() = 0;
 	virtual void behaviorFailed(const std::string& file, int line, const std::string& description) = 0;
 	virtual void specificationEnded(const std::string& specName) = 0;
+	virtual bool anyBehaviorFailed() const = 0;
 };
 
 }

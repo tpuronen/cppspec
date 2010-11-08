@@ -31,8 +31,7 @@
 #define CPPSPEC_MAIN \
 	int main(int argc, char* argv[]) { \
         CppSpec::SpecRunner runner(argc, argv); \
-		runner.runSpecifications(); \
-		return 0; \
+		return runner.runSpecifications(); \
 	}
 
 

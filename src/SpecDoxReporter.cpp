@@ -21,7 +21,7 @@
 
 namespace CppSpec {
 
-SpecDoxReporter::SpecDoxReporter(OutputStream& outputStream) : outputStream(outputStream), count(0), failedCount(0), successCount(0) {
+SpecDoxReporter::SpecDoxReporter(OutputStream& outputStream) : outputStream(outputStream), count(0), failedCount(0), successCount(0), failOccured(false) {
 }
 
 SpecDoxReporter::~SpecDoxReporter() {
@@ -45,10 +45,15 @@ void SpecDoxReporter::behaviorSucceeded() {
 void SpecDoxReporter::behaviorFailed(const std::string& file, int line, const std::string& description) {
 	outputStream << ", " << description << " in " << file << ":" << line << "\n";
 	++failedCount;
+	failOccured = true;
 }
 
 void SpecDoxReporter::specificationEnded(const std::string& specName) {
 	outputStream << specName << " executed, " << successCount << " of " << count << " behaviors passed and " << failedCount << " failed." << "\n" << "\n";
+}
+
+bool SpecDoxReporter::anyBehaviorFailed() const {
+	return failOccured;
 }
 
 void SpecDoxReporter::resetCounters() {
