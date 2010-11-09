@@ -113,7 +113,7 @@ TEST_FIXTURE(ExceptionThrowingSpecification, ThrowIntValue) {
     CHECK(result.wasSuccess());
 }
 
-/*TEST_FIXTURE(ExceptionThrowingSpecification, ThrowStringValue) {
+TEST_FIXTURE(ExceptionThrowingSpecification, ThrowStringValue) {
 	InvocationResult result = spec->invoking(&Test::throwString).should.raise.exception(std::string("Exception occured"));
     CHECK(result.wasSuccess());
 }
@@ -126,7 +126,7 @@ TEST_FIXTURE(ExceptionThrowingSpecification, DifferentStringValueThrown) {
         return;
     }
     CHECK(false);
-}*/
+}
 
 TEST_FIXTURE(ExceptionThrowingSpecification, ThrowWrongIntValue) {
     try {
@@ -197,8 +197,3 @@ TEST_FIXTURE(ExceptionThrowingSpecification, AssertStdExceptionTypeAndMessage) {
     InvocationResult result = spec->invoking(&Test::throwDerived).should.raise.exception(Test::MyException());
     CHECK(result.wasSuccess());
 }
-
-/*TEST_FIXTURE(ExceptionThrowingSpecification, AssertStdExceptionTypeAndMessage2) {
-    InvocationResult result = spec->invoking(&Test::throwRuntimeException).should.raise.exception<Test::RuntimeException>("Something terrible happened");
-    CHECK(result.wasSuccess());
-}*/

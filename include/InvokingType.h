@@ -44,11 +44,6 @@ public:
         return Invocation<T>(invocation).invoke(expected);
 	}
 
-	template<class T>
-	InvocationResult exception(const std::string& expectedMessage) {
-	    return Invocation<T>(invocation).invokeWithExpectedMessage(expectedMessage);
-	}
-
 public:
 	InvokingType& should;
 	InvokingType& raise;
