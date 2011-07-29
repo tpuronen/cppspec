@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-#include "UnitTest++.h"
+#include <gtest/gtest.h>
+
+int main(int argc, char* argv[]) {
+	::testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
+}
+
+
+/*#include "UnitTest++.h"
 #include "Needle/Binder.h"
 #include "TimerStub.h"
 
@@ -22,3 +30,4 @@ int main(int argc, char** args) {
     Needle::Binder::instance().bind<CppSpec::Timer, TimerStub>(new TimerStub());
     return UnitTest::RunAllTests();
 }
+*/

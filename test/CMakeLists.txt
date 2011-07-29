@@ -16,6 +16,13 @@
 
 find_path(UNITTESTPP_INCLUDE_DIR UnitTest++.h)
 find_library(UNITTESTPP_LIBRARY NAMES UnitTest++)
+find_package(GTest REQUIRED)
+include_directories(../include ${GTEST_INCLUDE_DIRS})
+
+add_executable(CppSpecGTest CompositeSpecTest.cpp main.cpp)
+target_link_libraries(CppSpecGTest ${GTEST_BOTH_LIBRARIES})
+
+add_test(CppSpecTests CppSpecGTest)
 
 if(UNITTESTPP_INCLUDE_DIR AND UNITTESTPP_LIBRARY) 
 	include_directories(../include ${UNITTESTPP_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
