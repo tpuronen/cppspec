@@ -18,7 +18,7 @@
 #define BOOSTTIMER_H_
 
 #include "Timer.h"
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/chrono.hpp>
 #include <sstream>
 
 namespace CppSpec {
@@ -35,16 +35,16 @@ public: // from Timer
 	std::string durationFromBehaviorStart();
 
 private:
-	std::string durationFrom(boost::posix_time::ptime& startTime);
+	std::string durationFrom(boost::chrono::system_clock::time_point& startTime);
 
 private:
     BoostTimer(const BoostTimer&);
     BoostTimer& operator=(const BoostTimer&);
 
 private:
-	boost::posix_time::ptime specificationStartTime;
-	boost::posix_time::ptime behaviorStartTime;
-	std::stringstream stream;
+    boost::chrono::system_clock::time_point specificationStartTime;
+    boost::chrono::system_clock::time_point behaviorStartTime;
+    std::stringstream stream;
 };
 
 }

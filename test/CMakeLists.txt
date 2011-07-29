@@ -19,7 +19,7 @@ find_library(UNITTESTPP_LIBRARY NAMES UnitTest++)
 find_package(GTest REQUIRED)
 include_directories(../include ${GTEST_INCLUDE_DIRS})
 
-add_executable(CppSpecGTest CompositeSpecTest.cpp main.cpp)
+add_executable(CppSpecGTest main.cpp)
 target_link_libraries(CppSpecGTest ${GTEST_BOTH_LIBRARIES})
 
 add_test(CppSpecTests CppSpecGTest)

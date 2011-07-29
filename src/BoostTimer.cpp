@@ -15,24 +15,21 @@
  */
 
 #include "BoostTimer.h"
+#include <iomanip>
 
 namespace CppSpec {
 
-BoostTimer::BoostTimer() : specificationStartTime(boost::posix_time::not_a_date_time), behaviorStartTime(boost::posix_time::not_a_date_time) {
-    boost::posix_time::time_facet* facet = new boost::posix_time::time_facet();
-    stream.imbue(std::locale(std::locale::classic(), facet));
-    facet->time_duration_format("%s");
-}
+BoostTimer::BoostTimer() {}
 
 BoostTimer::~BoostTimer() {
 }
 
 void BoostTimer::startSpecification() {
-	specificationStartTime = boost::posix_time::microsec_clock::local_time();
+    specificationStartTime = boost::chrono::system_clock::now();
 }
 
 void BoostTimer::startBehavior() {
-	behaviorStartTime = boost::posix_time::microsec_clock::local_time();
+    behaviorStartTime = boost::chrono::system_clock::now();
 }
 
 std::string BoostTimer::durationFromSpecificationStart() {
@@ -43,11 +40,10 @@ std::string BoostTimer::durationFromBehaviorStart() {
 	return durationFrom(behaviorStartTime);
 }
 
-std::string BoostTimer::durationFrom(boost::posix_time::ptime& startTime) {
-	boost::posix_time::time_duration duration = boost::posix_time::microsec_clock::local_time() - startTime;
-    startTime = boost::posix_time::not_a_date_time;
-	stream.str("");
-    stream << duration;
+std::string BoostTimer::durationFrom(boost::chrono::system_clock::time_point& startTime) {
+    boost::chrono::duration<double> secs = boost::chrono::system_clock::now() - startTime;
+    stream.str("");
+    stream << std::fixed << std::setprecision(6) << secs.count();
     return stream.str();
 }
 

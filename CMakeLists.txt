@@ -22,7 +22,7 @@ set(VERSION 0.5.0)
 if(WIN32)
   set(Boost_USE_STATIC_LIBS ON)
 endif(WIN32)
-find_package(Boost COMPONENTS regex program_options filesystem date_time system REQUIRED)
+find_package(Boost COMPONENTS regex program_options filesystem date_time chrono system REQUIRED)
 add_definitions(${Boost_LIB_DIAGNOSTIC_DEFINITIONS}) 
 
 add_subdirectory(src)
