@@ -25,11 +25,15 @@
 namespace CppSpec {
 
 JUnitReporter::JUnitReporter()
-: specificationName(), behaviorName(), behaviorResults(), createLogFiles(false), reportDirectory(), failOccured(false) {
+: specificationName(), behaviorName(), behaviorResults(), createLogFiles(false), reportDirectory(), failOccured(false),
+    behaviorTimer("behavior"), specificationTimer("spec")
+{
 }
 
 JUnitReporter::JUnitReporter(const std::string& reportDirectory)
-: specificationName(), behaviorName(), behaviorResults(), createLogFiles(true), reportDirectory(reportDirectory), failOccured(false) {
+: specificationName(), behaviorName(), behaviorResults(), createLogFiles(true), reportDirectory(reportDirectory), failOccured(false),
+    behaviorTimer("behavior"), specificationTimer("spec")
+{
 }
 
 JUnitReporter::~JUnitReporter() {
@@ -38,21 +42,21 @@ JUnitReporter::~JUnitReporter() {
 void JUnitReporter::specificationStarted(const Runnable& specification) {
 	specificationName = specification.getName();
 	behaviorResults.clear();
-	timer->startSpecification();
+	specificationTimer->start();
 }
 
 void JUnitReporter::behaviorStarted(const std::string& behavior) {
 	behaviorName = behavior;
-	timer->startBehavior();
+	behaviorTimer->start();
 }
 
 
 void JUnitReporter::behaviorSucceeded() {
-	behaviorResults.push_back(Result(behaviorName, "", true, timer->durationFromBehaviorStart(), "", 0));
+	behaviorResults.push_back(Result(behaviorName, "", true, behaviorTimer->stop(), "", 0));
 }
 
 void JUnitReporter::behaviorFailed(const std::string& file, int line, const std::string& description) {
-	behaviorResults.push_back(Result(behaviorName, description, false, timer->durationFromBehaviorStart(), file, line));
+	behaviorResults.push_back(Result(behaviorName, description, false, behaviorTimer->stop(), file, line));
 	failOccured = true;
 }
 
@@ -63,7 +67,8 @@ void JUnitReporter::specificationEnded(const std::string& /*specName*/) {
 	calculateResults(pass, fails);
 	std::string time = currentTime();
 	(*output) << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << "\n";
-	(*output) << "<testsuite failures=\"" << fails << "\" name=\"" << specificationName << "\" tests=\"" << pass + fails << "\" time=\"" << timer->durationFromSpecificationStart() << "\" timestamp=\"" << time << "\">" << "\n";
+	(*output) << "<testsuite failures=\"" << fails << "\" name=\"" << specificationName << "\" tests=\"" << pass + fails << "\" time=\"" << 
+        specificationTimer->stop() << "\" timestamp=\"" << time << "\">" << "\n";
 	printSpecResults(*output);
 	(*output) << "</testsuite>" << "\n";
 
@@ -90,7 +95,12 @@ void JUnitReporter::calculateResults(int& pass, int& fails) {
 
 void JUnitReporter::printSpecResults(OutputStream& output) {
 	for(BOOST_AUTO(it, behaviorResults.begin()); it != behaviorResults.end(); ++it) {
-		output << "<testcase classname=\"" << specificationName << "\" name=\"" << it->behaviorName << "\" time=\"" << it->duration << "\"";
+		output  << "<testcase classname=\"" 
+                << specificationName 
+                << "\" name=\"" 
+                << it->behaviorName 
+                << "\" time=\"" 
+                << it->duration << "\"";
 		if(!it->pass) {
 			output << ">" << "\n";
 			output << "<error message=\"" << it->reason << " at " << it->file << ":" << it->line << "\" />" << "\n";

@@ -15,10 +15,8 @@ namespace CppSpec {
 class Timer {
 public:
 	virtual ~Timer() {}
-	virtual void startSpecification() = 0;
-	virtual void startBehavior() = 0;
-	virtual std::string durationFromSpecificationStart() = 0;
-	virtual std::string durationFromBehaviorStart() = 0;
+	virtual void start() = 0;
+	virtual std::string stop() = 0;
 };
 
 }

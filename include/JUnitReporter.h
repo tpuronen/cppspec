@@ -73,8 +73,9 @@ private:
 	std::vector<Result> behaviorResults;
 	bool createLogFiles;
 	std::string reportDirectory;
-	Needle::Inject<Timer> timer;
 	bool failOccured;
+	Needle::Inject<Timer> behaviorTimer;
+    Needle::Inject<Timer> specificationTimer;
 };
 
 }

@@ -16,6 +16,7 @@
 
 #include "BoostTimer.h"
 #include <iomanip>
+#include <sstream>
 
 namespace CppSpec {
 
@@ -24,25 +25,13 @@ BoostTimer::BoostTimer() {}
 BoostTimer::~BoostTimer() {
 }
 
-void BoostTimer::startSpecification() {
-    specificationStartTime = boost::chrono::system_clock::now();
+void BoostTimer::start() {
+    startTime = boost::chrono::system_clock::now();
 }
 
-void BoostTimer::startBehavior() {
-    behaviorStartTime = boost::chrono::system_clock::now();
-}
-
-std::string BoostTimer::durationFromSpecificationStart() {
-    return durationFrom(specificationStartTime);
-}
-
-std::string BoostTimer::durationFromBehaviorStart() {
-	return durationFrom(behaviorStartTime);
-}
-
-std::string BoostTimer::durationFrom(boost::chrono::system_clock::time_point& startTime) {
+std::string BoostTimer::stop() {
     boost::chrono::duration<double> secs = boost::chrono::system_clock::now() - startTime;
-    stream.str("");
+    std::stringstream stream;
     stream << std::fixed << std::setprecision(6) << secs.count();
     return stream.str();
 }

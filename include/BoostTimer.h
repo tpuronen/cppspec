@@ -19,7 +19,6 @@
 
 #include "Timer.h"
 #include <boost/chrono.hpp>
-#include <sstream>
 
 namespace CppSpec {
 
@@ -29,22 +28,15 @@ public:
 	virtual ~BoostTimer();
 
 public: // from Timer
-	void startSpecification();
-	void startBehavior();
-	std::string durationFromSpecificationStart();
-	std::string durationFromBehaviorStart();
-
-private:
-	std::string durationFrom(boost::chrono::system_clock::time_point& startTime);
+    void start();
+    std::string stop();
 
 private:
     BoostTimer(const BoostTimer&);
     BoostTimer& operator=(const BoostTimer&);
 
 private:
-    boost::chrono::system_clock::time_point specificationStartTime;
-    boost::chrono::system_clock::time_point behaviorStartTime;
-    std::stringstream stream;
+    boost::chrono::system_clock::time_point startTime;
 };
 
 }

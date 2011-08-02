@@ -65,7 +65,8 @@ SpecRunner::~SpecRunner() {
 }
 
 int SpecRunner::runSpecifications() {
-    Needle::Binder::instance().bind<Timer>(new BoostTimer());
+    Needle::Binder::instance().bind<Timer>(new BoostTimer(), "behavior");
+    Needle::Binder::instance().bind<Timer>(new BoostTimer(), "spec");
 
     OutputStream* outputStream = createOutputStream();
     Reporter* reporter = createReporter(*outputStream);
