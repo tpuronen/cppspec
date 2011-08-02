@@ -29,8 +29,7 @@ namespace Needle {
 
 class InterfaceNotBoundToImplementationException : public std::runtime_error {
 public:
-    InterfaceNotBoundToImplementationException(const std::string& description) :
-        std::runtime_error("Implementation for " + description + " is not bound.") {}
+    InterfaceNotBoundToImplementationException(const std::string& description) : std::runtime_error(description) {}
 };
 
 class Binder {
@@ -40,18 +39,34 @@ public:
         return binder;
     }
 
-    template<class Interface, class Implementation>
+    template<typename Interface, typename Implementation>
     void bind(Implementation* implementation) {
-        bound[typeid(Interface).name()] = boost::shared_ptr<Interface>(implementation);
+        bind<Interface>(implementation, "");
+    }
+    
+    template<typename Interface, typename Implementation>
+    void bind(Implementation* implementation, const std::string& id) {
+        bound[createName<Interface>(id)] = boost::shared_ptr<Interface>(implementation);
     }
 
-    template<class Interface>
+    template<typename Interface>
     boost::shared_ptr<Interface> get() {
+        return get<Interface>("");
+    }
+    
+    template<typename Interface>
+    boost::shared_ptr<Interface> get(const std::string& id) {
         try {
-            boost::shared_ptr<Interface> instance = boost::any_cast<boost::shared_ptr<Interface> >(bound.find(typeid(Interface).name())->second);
-            return instance;
-        } catch (boost::bad_any_cast&) {
-            throw InterfaceNotBoundToImplementationException(NeedleTypeNameResolver().getTypename<Interface>());
+            std::map<std::string, boost::any>::iterator it = bound.find(createName<Interface>(id));
+            if (it == bound.end()) {
+                throw boost::bad_any_cast();
+            }
+            return boost::any_cast<boost::shared_ptr<Interface> >(it->second);
+        } catch (boost::bad_any_cast& e) {
+            std::string description("Implementation for ");
+            description += NeedleTypeNameResolver().getTypename<Interface>();
+            description += " is not bound.";
+            throw InterfaceNotBoundToImplementationException(description);
         }
     }
 
@@ -59,6 +74,14 @@ public:
         bound.clear();
     }
 
+private:
+    template<typename Interface>
+    std::string createName(const std::string& id) {
+        std::string name(typeid(Interface).name());
+        name += "-" + id;
+        return name;
+    }
+    
 private:
     Binder() {}
 

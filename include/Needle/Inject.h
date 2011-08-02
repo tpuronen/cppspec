@@ -17,15 +17,18 @@
 #ifndef INJECT_H_
 #define INJECT_H_
 
-#include <boost/shared_ptr.hpp>
 #include "Binder.h"
+#include <boost/shared_ptr.hpp>
 
 namespace Needle {
 
-template<class T>
+template<typename T>
 class Inject : public boost::shared_ptr<T> {
 public:
     Inject() : boost::shared_ptr<T>(Binder::instance().get<T>()) {
+    }
+    
+    Inject(const std::string& name) : boost::shared_ptr<T>(Binder::instance().get<T>(name)) {
     }
 };
 
