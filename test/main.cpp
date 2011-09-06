@@ -15,19 +15,12 @@
  */
 
 #include <gtest/gtest.h>
-
-int main(int argc, char* argv[]) {
-	::testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
-}
-
-
-/*#include "UnitTest++.h"
 #include "Needle/Binder.h"
 #include "TimerStub.h"
 
-int main(int argc, char** args) {
-    Needle::Binder::instance().bind<CppSpec::Timer, TimerStub>(new TimerStub());
-    return UnitTest::RunAllTests();
+int main(int argc, char* argv[]) {
+	::testing::InitGoogleTest(&argc, argv);
+    Needle::Binder::instance().bind<CppSpec::Timer, TimerStub>(new TimerStub(), "spec");
+    Needle::Binder::instance().bind<CppSpec::Timer, TimerStub>(new TimerStub(), "behavior");
+	return RUN_ALL_TESTS();
 }
-*/

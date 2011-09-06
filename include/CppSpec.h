@@ -29,7 +29,7 @@
 	specifyImpl(__FILE__, __LINE__, __VA_ARGS__)
 
 #define CPPSPEC_MAIN \
-	int main(int argc, char* argv[]) { \
+	int main(int argc, const char* argv[]) { \
         CppSpec::SpecRunner runner(argc, argv); \
 		return runner.runSpecifications(); \
 	}

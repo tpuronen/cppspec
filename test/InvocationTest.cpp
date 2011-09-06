@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#include <UnitTest++.h>
-#include <Invocation.h>
-#include <Specification.h>
+#include <gtest/gtest.h>
+#include "Invocation.h"
+#include "Specification.h"
 
 using CppSpec::Invocation;
 using CppSpec::InvocationResult;
@@ -35,49 +35,50 @@ void methodThrowingStdException() {
 
 void nonThrowingMethod() {}
 
-TEST(methodThrowsExpectedException) {
+
+TEST(InvocationTest, methodThrowsExpectedException) {
     Invocation<int> invocation(&methodThrowingInt);
     InvocationResult result = invocation.invoke();
-    CHECK(result.wasSuccess());
+    EXPECT_TRUE(result.wasSuccess());
 }
 
-TEST(methodThrowsDifferentExceptionType) {
+TEST(InvocationTest, methodThrowsDifferentExceptionType) {
     Invocation<std::string> invocation(&methodThrowingInt);
     InvocationResult result = invocation.invoke();
-    CHECK_EQUAL(false, result.wasSuccess());
-    CHECK_EQUAL("Expected type but unknown type was thrown", result.getDescription());
+    EXPECT_FALSE(result.wasSuccess());
+    EXPECT_EQ("Expected std::string but unknown type was thrown", result.getDescription());
 }
 
-TEST(methodThrowsExpectedValue) {
+TEST(InvocationTest, methodThrowsExpectedValue) {
     Invocation<int> invocation(&methodThrowingInt);
     InvocationResult result = invocation.invoke(5);
-    CHECK(result.wasSuccess());
+    EXPECT_TRUE(result.wasSuccess());
 }
 
-TEST(methodThrowsOtherValue) {
+TEST(InvocationTest, methodThrowsOtherValue) {
     Invocation<int> invocation(&methodThrowingInt);
     InvocationResult result = invocation.invoke(1);
-    CHECK_EQUAL("Expected type[1] but type[5] was thrown", result.getDescription());
-    CHECK_EQUAL(false, result.wasSuccess());
+    EXPECT_EQ("Expected int[1] but int[5] was thrown", result.getDescription());
+    EXPECT_FALSE(result.wasSuccess());
 }
 
-TEST(methodThrowsStdExceptionWhenIntExpected) {
+TEST(InvocationTest, methodThrowsStdExceptionWhenIntExpected) {
     Invocation<int> invocation(&methodThrowingStdException);
     InvocationResult result = invocation.invoke(1);
-    CHECK_EQUAL("Expected type but type[std::exception] was thrown", result.getDescription());
-    CHECK_EQUAL(false, result.wasSuccess());
+    EXPECT_EQ("Expected int but methodThrowingStdException()::stdexception[std::exception] was thrown", result.getDescription());
+    EXPECT_FALSE(result.wasSuccess());
 }
 
-TEST(methodThrowsDifferentTypeWhenValueExpected) {
+TEST(InvocationTest, methodThrowsDifferentTypeWhenValueExpected) {
     Invocation<std::string> invocation(&methodThrowingInt);
     InvocationResult result = invocation.invoke(std::string("Exception"));
-    CHECK_EQUAL("Expected type but unknown type was thrown", result.getDescription());
-    CHECK_EQUAL(false, result.wasSuccess());
+    EXPECT_EQ("Expected std::string but unknown type was thrown", result.getDescription());
+    EXPECT_FALSE(result.wasSuccess());
 }
 
-TEST(methodDoesNotThrowException) {
+TEST(InvocationTest, methodDoesNotThrowException) {
     Invocation<std::string> invocation(&nonThrowingMethod);
     InvocationResult result = invocation.invoke(std::string("Exception"));
-    CHECK_EQUAL("Expected type but no exception was thrown", result.getDescription());
-    CHECK_EQUAL(false, result.wasSuccess());
+    EXPECT_EQ("Expected std::string but no exception was thrown", result.getDescription());
+    EXPECT_FALSE(result.wasSuccess());
 }

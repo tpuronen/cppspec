@@ -14,72 +14,71 @@
  * limitations under the License.
  */
 
-#include "UnitTest++.h"
+#include <gtest/gtest.h>
 #include "SpecRunner.h"
 #include "OutputStreamStub.h"
-#include "Reporter.h"
-#include "JUnitReporter.h"
-#include "SpecDoxReporter.h"
-#include "CuteReporter.h"
 #include "SpecificationRegistry.h"
+#include "SpecDoxReporter.h"
+#include "JUnitReporter.h"
+#include "CuteReporter.h"
 #include "Runnable.h"
 
 using CppSpec::SpecRunner;
-using CppSpec::Reporter;
-using CppSpec::JUnitReporter;
-using CppSpec::SpecDoxReporter;
-using CppSpec::CuteReporter;
 using CppSpec::SpecificationRegistry;
+using CppSpec::SpecDoxReporter;
+using CppSpec::JUnitReporter;
+using CppSpec::CuteReporter;
 using CppSpec::Runnable;
+using CppSpec::Reporter;
 
 namespace CppSpec {
-class SpecRunnerTestAccessor {
-public:
-    template<class ExpectedReporterType>
-    void checkThatGivenReporterIsCreated(SpecRunner& specRunner) {
-        OutputStreamStub output;
-        Reporter* reporter = specRunner.createReporter(output);
-        ExpectedReporterType* expectedReporterType = dynamic_cast<ExpectedReporterType*>(reporter);
-        CHECK(expectedReporterType != NULL);
-        delete reporter;
-    }
-};
+    class SpecRunnerTestAccessor {
+    public:
+        template<class ExpectedReporterType>
+        void checkThatGivenReporterIsCreated(SpecRunner& specRunner) {
+            OutputStreamStub output;
+            Reporter* reporter = specRunner.createReporter(output);
+            ExpectedReporterType* expectedReporterType = dynamic_cast<ExpectedReporterType*>(reporter);
+            EXPECT_TRUE(expectedReporterType != NULL);
+            delete reporter;
+        }
+    };
 }
 using CppSpec::SpecRunnerTestAccessor;
 
 SpecRunner* createSpecRunner() {
-    char* args[] = {"test"};
+    const char* args[] = {"test"};
 	SpecificationRegistry::instance().clear();
     return new SpecRunner(1, args);
 }
 
-TEST(SpecDoxReporterIsReturnedByDefault) {
+TEST(SpecRunnerTest, SpecDoxReporterIsReturnedByDefault) {
 	SpecRunner* specRunner = createSpecRunner();
     SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<SpecDoxReporter>(*specRunner);
 	delete specRunner;
 }
 
-TEST(CreateReporterReturnsJUnitReporterIfGivenInArguments) {
-    char* args[] = {"test", "-o", "junit", "--report-dir", "foo"};
+TEST(SpecRunnerTest, CreateReporterReturnsJUnitReporterIfGivenInArguments) {
+    const char* args[] = {"test", "-o", "junit", "--report-dir", "foo"};
     SpecRunner specRunner(5, args);
     SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<JUnitReporter>(specRunner);
 }
 
-TEST(CreateReporterReturnsJUnitReporterWithoutLogFilesIfGivenInArguments) {
-    char* args[] = {"test", "-o", "junit", "--no-logs"};
+TEST(SpecRunnerTest, CreateReporterReturnsJUnitReporterWithoutLogFilesIfGivenInArguments) {
+    const char* args[] = {"test", "-o", "junit", "--no-logs"};
     SpecRunner specRunner(4, args);
     SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<JUnitReporter>(specRunner);
 }
 
-TEST(CreateReporterReturnsCuteReporterIfGivenInArguments) {
-    char* args[] = {"test", "-o", "cute"};
+TEST(SpecRunnerTest, CreateReporterReturnsCuteReporterIfGivenInArguments) {
+    const char* args[] = {"test", "-o", "cute"};
     SpecRunner specRunner(3, args);
     SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<CuteReporter>(specRunner);
 }
 
-TEST(ReturnZeroIfNoTestsExecuted) {
+TEST(SpecRunnerTest, ReturnZeroIfNoTestsExecuted) {
     SpecRunner* specRunner = createSpecRunner();
-	CHECK_EQUAL(0, specRunner->runSpecifications());
+	EXPECT_EQ(0, specRunner->runSpecifications());
 	delete specRunner;
 }
 
@@ -96,10 +95,10 @@ struct DummyRunnable : public Runnable {
 	const std::string name;
 };
 
-TEST(ReturnOneIfATestFails) {
+TEST(SpecRunnerTest, ReturnOneIfATestFails) {
 	SpecRunner* specRunner = createSpecRunner();
 	DummyRunnable runnable;
 	SpecificationRegistry::instance().addSpecification(&runnable);
-	CHECK_EQUAL(1, specRunner->runSpecifications());
+	EXPECT_EQ(1, specRunner->runSpecifications());
 	delete specRunner;
 }

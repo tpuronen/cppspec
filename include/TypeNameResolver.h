@@ -29,9 +29,7 @@ class TypeNameResolver {
 public:
     template<class T>
 	std::string getTypename() const {
-#if __CPPSPEC_TEST__
-        return "type";
-#elif __GNUC__
+#if __GNUC__
 		int status;
 		char* demangledName = abi::__cxa_demangle(typeid(T).name(), NULL, NULL, &status);
 		std::string demangled(demangledName);
@@ -44,9 +42,7 @@ public:
 
     template<class T>
     std::string getTypename(T& t) {
-#if __CPPSPEC_TEST__
-        return "type";
-#elif __GNUC__
+#if __GNUC__
         int status;
         char* demangledName = abi::__cxa_demangle(typeid(t).name(), NULL, NULL, &status);
         std::string demangled(demangledName);

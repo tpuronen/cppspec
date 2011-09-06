@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-#include <UnitTest++.h>
+#include <gtest/gtest.h>
 #include "TypeHasStreamingOperator.h"
 
 class Foo {
 };
 
-SUITE(TypeHasStreamingOperator) {
-    TEST(hasStreamingOperator) {
-        CHECK(CppSpec::TypeHasStreamingOperator<int>::result);
-    }
+TEST(TypeHasStreamingOperatorTest, TypeHasStreamingOperator) {
+    EXPECT_TRUE(CppSpec::TypeHasStreamingOperator<int>::result);
+}
 
-    TEST(doesNotHaveStreamingOperator) {
-        CHECK(!CppSpec::TypeHasStreamingOperator<Foo>::result);
-    }
+TEST(TypeHasStreamingOperatorTest, TypeDoesNotHavenStreamingOperator) {
+    EXPECT_FALSE(CppSpec::TypeHasStreamingOperator<Foo>::result);
+}
 
-    TEST(streamingReference) {
-        CHECK(CppSpec::TypeHasStreamingOperator<int&>::result);
-    }
-};
-
+TEST(TypeHasStreamingOperatorTest, StreamingReference) {
+    EXPECT_TRUE(CppSpec::TypeHasStreamingOperator<int&>::result);
+}

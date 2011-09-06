@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
+#include <gtest/gtest.h>
 #include "BoostTimer.h"
-#include <UnitTest++.h>
 #include <string>
 #include <boost/regex.hpp>
 
 using CppSpec::BoostTimer;
 
-struct BoostTimerTest {
-    BoostTimerTest() : regexp("\\d{2}.\\d{6}") {timer = new BoostTimer;}
+class BoostTimerTest : public ::testing::Test {
+public:
+    BoostTimerTest() : regexp("\\d{1}.\\d{6}") {timer = new BoostTimer;}
     ~BoostTimerTest() {delete timer;}
 
     BoostTimer* timer;
     boost::regex regexp;
 };
 
-SUITE(BoostTimer) {
-    TEST_FIXTURE(BoostTimerTest, specificationDurationFormatIsExpected) {
-        timer->startSpecification();
-        std::string duration(timer->durationFromSpecificationStart());
-        CHECK(boost::regex_match(duration, regexp));
-    }
-
-    TEST_FIXTURE(BoostTimerTest, behaviorDurationFormatIsExpected) {
-        timer->startBehavior();
-        std::string duration(timer->durationFromBehaviorStart());
-        CHECK(boost::regex_match(duration, regexp));
-    }
+TEST_F(BoostTimerTest, specificationDurationFormatIsExpected) {
+    timer->start();
+    std::string duration(timer->stop());
+    ASSERT_TRUE(boost::regex_match(duration, regexp));    
 }
+
+TEST_F(BoostTimerTest, behaviorDurationFormatIsExpected) {
+    timer->start();
+    std::string duration(timer->stop());
+    ASSERT_TRUE(boost::regex_match(duration, regexp));
+}
+

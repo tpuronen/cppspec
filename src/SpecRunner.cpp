@@ -43,7 +43,7 @@ private:
     const std::vector<std::string>& specificationsToRun;
 };
 
-SpecRunner::SpecRunner(int argc, char* argv[]) {
+SpecRunner::SpecRunner(int argc, const char* argv[]) {
     boost::program_options::options_description options("Options");
     options.add_options()
         ("output,o", boost::program_options::value<std::string>(), "define output format. Allowed values: junit console cute")

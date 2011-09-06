@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-#include <UnitTest++.h>
+#include <gtest/gtest.h>
 #include "Expectation.h"
 
 using CppSpec::Expectation;
 
-TEST(sameTypesEqual) {
+TEST(ExpectationTest, sameTypesEqual) {
 	std::string result("expected");
     Expectation<std::string> expected(result);
-    CHECK(expected.equals(std::string("expected")));
-    CHECK((!expected).equals("something else"));
+    EXPECT_TRUE(expected.equals(std::string("expected")));
+    EXPECT_TRUE((!expected).equals("something else"));
 }
 
-TEST(convertibleTypesEqual) {
+TEST(ExpectationTest, convertibleTypesEqual) {
 	std::string result("expected");
     Expectation<std::string> expected(result);
-    CHECK(expected.equals("expected"));
+    EXPECT_TRUE(expected.equals("expected"));
 }

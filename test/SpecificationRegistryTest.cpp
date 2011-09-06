@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-#include <UnitTest++.h>
+#include <gtest/gtest.h>
 #include "SpecificationRegistry.h"
 #include "StubRunnable.h"
 
 using namespace CppSpec;
 
-TEST(canAddSpecification)
+TEST(SpecificationRegistryTest, canAddSpecification)
 {
 	SpecificationRegistry& registry = SpecificationRegistry::instance();
 	StubRunnable runnable;
 	const size_t initialSpecificationCount(registry.getSpecifications().size());
 	registry.addSpecification(&runnable);
-	CHECK_EQUAL(initialSpecificationCount + 1, registry.getSpecifications().size());
+	ASSERT_EQ(initialSpecificationCount + 1, registry.getSpecifications().size());
 }

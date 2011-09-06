@@ -14,37 +14,19 @@
 # limitations under the License.
 #
 
-find_path(UNITTESTPP_INCLUDE_DIR UnitTest++.h)
-find_library(UNITTESTPP_LIBRARY NAMES UnitTest++)
 find_package(GTest REQUIRED)
-include_directories(../include ${GTEST_INCLUDE_DIRS})
+include_directories(../include ${GTEST_INCLUDE_DIRS} ${BOOST_INCLUDE_DIRS})
 
-add_executable(CppSpecGTest main.cpp)
-target_link_libraries(CppSpecGTest ${GTEST_BOTH_LIBRARIES})
+set(CPPSPEC_SRCS ../src/SpecDoxReporter.cpp ../src/Matcher.cpp ../src/SpecificationRegistry.cpp ../src/SpecRunner.cpp ../src/BoostTimer.cpp 
+    ../src/CuteReporter.cpp ../src/JUnitReporter.cpp ../src/FileOutputStream.cpp ../src/ConsoleOutputStream.cpp ../src/Util.cpp)
+
+set(CPPSPEC_TEST_SRCS main.cpp JUnitReporterTest.cpp SpecDoxReporterTest.cpp BoostTimerTest.cpp SpecificationRegistryTest.cpp
+    InvokingTypeTest.cpp TypeHasStreamingOperatorTest.cpp VoidSpecification.cpp MatcherTest.cpp
+    ExpectationTest.cpp InvocationTest.cpp ExceptionThrowingSpecificationTest.cpp CuteReporterTest.cpp SpecificationTest.cpp
+    DummyReporter.cpp SpecRunnerTest.cpp)
+
+add_executable(CppSpecGTest ${CPPSPEC_SRCS} ${CPPSPEC_TEST_SRCS})
+link_directories(${BOOST_LIBRARY_DIRS})
+target_link_libraries(CppSpecGTest ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES})
 
 add_test(CppSpecTests CppSpecGTest)
-
-if(UNITTESTPP_INCLUDE_DIR AND UNITTESTPP_LIBRARY) 
-	include_directories(../include ${UNITTESTPP_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
-	set(CPPSPEC_SRCS ../src/SpecDoxReporter.cpp ../src/Matcher.cpp ../src/SpecificationRegistry.cpp ../src/SpecRunner.cpp ../src/BoostTimer.cpp ../src/CuteReporter.cpp
-	   ../src/JUnitReporter.cpp ../src/FileOutputStream.cpp ../src/ConsoleOutputStream.cpp ../src/Util.cpp)
-
-	if(UNIX)
-		set(CMAKE_CXX_FLAGS  ${CMAKE_CXX_FLAGS} " -Wall -fprofile-arcs -ftest-coverage")
-	endif(UNIX)
-	
-	if(MSVC)
-		set(EXTRA_LIBS winmm.lib)
-		set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} " /EHsc")
-	endif(MSVC)
-	
-	add_definitions(-D__CPPSPEC_TEST__)
-	set(EXECUTABLE_OUTPUT_PATH ../bin)	
-	link_directories(${Boost_LIBRARY_DIRS})
-	add_executable(CppSpecTest ${CPPSPEC_SRCS} main.cpp SpecDoxReporterTest.cpp BoostTimerTest.cpp SpecificationRegistryTest.cpp
-	   JUnitReporterTest.cpp InvokingTypeTest.cpp TypeHasStreamingOperatorTest.cpp VoidSpecification.cpp MatcherTest.cpp
-	   ExpectationTest.cpp InvocationTest.cpp ExceptionThrowingSpecificationTest.cpp CuteReporterTest.cpp SpecificationTest.cpp
-	   DummyReporter.cpp SpecRunnerTest.cpp) 
-	target_link_libraries(CppSpecTest ${UNITTESTPP_LIBRARY} ${EXTRA_LIBS} ${Boost_DATE_TIME_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY}
-		${Boost_FILESYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY})
-endif(UNITTESTPP_INCLUDE_DIR AND UNITTESTPP_LIBRARY) 

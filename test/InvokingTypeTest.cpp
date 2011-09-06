@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-#include "UnitTest++.h"
+
+#include <gtest/gtest.h>
 #include "InvokingType.h"
 #include <boost/bind.hpp>
 
@@ -35,7 +36,8 @@ public:
 	bool methodCalled;
 };
 
-struct InvokingTypeTest {
+class InvokingTypeTest : public ::testing::Test {
+protected:
     InvokingTypeTest() {
 		context = new Context;
     }
@@ -48,34 +50,32 @@ struct InvokingTypeTest {
     Context* context;
 };
 
-SUITE(InvokingType) {
-    TEST_FIXTURE(InvokingTypeTest, callMethodWithNoArgs) {
-        InvokingType functor(boost::bind(&Context::voidMethodWithNoArgs, context));
-        functor.exception<int>();
-        CHECK(context->methodCalled);
-    }
+TEST_F(InvokingTypeTest, callMethodWithNoArgs) {
+    InvokingType functor(boost::bind(&Context::voidMethodWithNoArgs, context));
+    functor.exception<int>();
+    ASSERT_TRUE(context->methodCalled);
+}
 
-    TEST_FIXTURE(InvokingTypeTest, callMethodWithOneArg) {
-        InvokingType functor(boost::bind(&Context::voidMethodWithOneArg, context, 1));
-        functor.exception<int>();
-        CHECK(context->methodCalled);
-    }
+TEST_F(InvokingTypeTest, callMethodWithOneArg) {
+    InvokingType functor(boost::bind(&Context::voidMethodWithOneArg, context, 1));
+    functor.exception<int>();
+    ASSERT_TRUE(context->methodCalled);
+}
 
-    TEST_FIXTURE(InvokingTypeTest, callMethodWithTwoArgs) {
-        InvokingType functor(boost::bind(&Context::voidMethodWithTwoArgs, context, 1, 2));
-        functor.exception<int>();
-        CHECK(context->methodCalled);
-    }
+TEST_F(InvokingTypeTest, callMethodWithTwoArgs) {
+    InvokingType functor(boost::bind(&Context::voidMethodWithTwoArgs, context, 1, 2));
+    functor.exception<int>();
+    ASSERT_TRUE(context->methodCalled);
+}
 
-    TEST_FIXTURE(InvokingTypeTest, callMethodWithThreeArgs) {
-        InvokingType functor(boost::bind(&Context::voidMethodWithThreeArgs, context, 1, 2, 3));
-        functor.exception<int>();
-        CHECK(context->methodCalled);
-    }
+TEST_F(InvokingTypeTest, callMethodWithThreeArgs) {
+    InvokingType functor(boost::bind(&Context::voidMethodWithThreeArgs, context, 1, 2, 3));
+    functor.exception<int>();
+    ASSERT_TRUE(context->methodCalled);
+}
 
-    TEST_FIXTURE(InvokingTypeTest, callMethodWithFourArgs) {
-        InvokingType functor(boost::bind(&Context::voidMethodWithFourArgs, context, 1, 2, 3, 4));
-        functor.exception<int>();
-        CHECK(context->methodCalled);
-    }
+TEST_F(InvokingTypeTest, callMethodWithFourArgs) {
+    InvokingType functor(boost::bind(&Context::voidMethodWithFourArgs, context, 1, 2, 3, 4));
+    functor.exception<int>();
+    ASSERT_TRUE(context->methodCalled);
 }

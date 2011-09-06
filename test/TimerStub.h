@@ -20,10 +20,8 @@
 #include "Timer.h"
 
 class TimerStub : public CppSpec::Timer {
-    void startSpecification() {}
-    void startBehavior() {}
-    std::string durationFromSpecificationStart() {return "00.010000";}
-    std::string durationFromBehaviorStart() {return "00.010000";}
+    void start() {}
+    std::string stop() {return "00.010000";}
 };
 
 #endif /* TIMERSTUB_H_ */

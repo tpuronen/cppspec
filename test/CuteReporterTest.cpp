@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/*
 #include "UnitTest++.h"
 #include "CuteReporter.h"
 #include "StubRunnable.h"
@@ -77,3 +78,4 @@ TEST_FIXTURE(CuteReporterTest, behaviorFailed) {
 	CHECK_EQUAL("\n#failure emptyStackShouldThrowExceptionOnPop File.cpp:135 expected 1, but was 2\n", stream->str());
 	CHECK(reporter->anyBehaviorFailed());
 }
+*/

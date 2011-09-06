@@ -14,25 +14,13 @@
  * limitations under the License.
  */
 
-#include "UnitTest++.h"
+#include <gtest/gtest.h>
 #include "CppSpec.h"
 #include "DummyReporter.h"
 
 using CppSpec::Specification;
 
 class EmptyTestSpec : public Specification<void, EmptyTestSpec> {
-};
-
-SUITE(EmptySpecification) {
-    TEST(hasName) {
-        EmptyTestSpec spec;
-        CHECK_EQUAL("type", spec.getName());
-    }
-
-    TEST(hasCountOfZero) {
-        EmptyTestSpec spec;
-        CHECK_EQUAL((size_t)0, spec.getBehaviorCount());
-    }
 };
 
 class SpecWithBehaviours : public Specification<void, SpecWithBehaviours> {
@@ -46,63 +34,74 @@ public:
         REGISTER_BEHAVIOUR(SpecWithBehaviours, substringIsNotFound);
         REGISTER_BEHAVIOUR(SpecWithBehaviours, stringsDoNotMatch);
     }
-
+    
     void passingBehaviour() {
         specify(true);
     }
-
+    
     void failingBehaviour() {
         specify(false);
     }
-
+    
     void intsShouldEqual() {
         specify(2, should.equal(2));
     }
-
+    
     void intsAreInequal() {
         specify(1, should.equal(2));
     }
-
+    
     void findsSubstring() {
         specify("silence", should.contain("si"));
     }
-
+    
     void substringIsNotFound() {
         specify("silence", should.contain("is"));
     }
-
+    
     void stringsDoNotMatch() {
         specify("silence", should.match("noise"));
     }
 };
 
-struct SpecWithBehavioursTest {
-    SpecWithBehavioursTest() {
+TEST(EmptySpecificationTest, HasName) {
+    EmptyTestSpec spec;
+    EXPECT_EQ(std::string("EmptyTestSpec"), spec.getName());
+}
+
+TEST(EmptySpecificationTest, HasCountOfZero) {
+    EmptyTestSpec spec;
+    EXPECT_EQ((size_t)0, spec.getBehaviorCount());
+}
+
+class SpecWithBehavioursTest : public ::testing::Test {
+protected:
+    void SetUp() {
         reporter = new DummyReporter();
         spec = new SpecWithBehaviours();
     }
-
-    ~SpecWithBehavioursTest() {
+    
+    void TearDown() {
         delete spec;
+        spec = NULL;
         delete reporter;
+        reporter = NULL;
     }
-
+    
     DummyReporter* reporter;
     SpecWithBehaviours* spec;
 };
 
-SUITE(SpecificationWithBehaviors) {
-    TEST_FIXTURE(SpecWithBehavioursTest, hasCount) {
-        CHECK_EQUAL((size_t)7, spec->getBehaviorCount());
-    }
+TEST_F(SpecWithBehavioursTest, HasCount) {
+    EXPECT_EQ((size_t)7, spec->getBehaviorCount());
+}
 
-    TEST_FIXTURE(SpecWithBehavioursTest, canCallContextForVoid) {
-        spec->context();
-    }
+TEST_F(SpecWithBehavioursTest, CanCallContextForVoid) {
+    spec->context();
+}
 
-    TEST_FIXTURE(SpecWithBehavioursTest, behavioursAreExecuted) {
-        (*spec)(reporter);
-        CHECK_EQUAL(3, reporter->succes);
-        CHECK_EQUAL(4, reporter->failed);
-    }
+TEST_F(SpecWithBehavioursTest, BehaviorsAreExecuted) {
+    (*spec)(reporter);
+    EXPECT_EQ(3, reporter->success);
+    EXPECT_EQ(4, reporter->failed);
 }

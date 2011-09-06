@@ -34,7 +34,7 @@ public: // from Reporter
 	bool anyBehaviorFailed() const;
 
 public:
-	int succes;
+	int success;
 	int failed;
 	std::string lastFailureDescription;
 };

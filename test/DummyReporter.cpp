@@ -16,7 +16,7 @@
 
 #include "DummyReporter.h"
 
-DummyReporter::DummyReporter() : succes(0), failed(0) {
+DummyReporter::DummyReporter() : success(0), failed(0) {
 }
 
 DummyReporter::~DummyReporter() {
@@ -29,7 +29,7 @@ void DummyReporter::behaviorStarted(const std::string& /*behavior*/) {
 }
 
 void DummyReporter::behaviorSucceeded() {
-	++succes;
+	++success;
 }
 
 void DummyReporter::behaviorFailed(const std::string&, int, const std::string& description) {

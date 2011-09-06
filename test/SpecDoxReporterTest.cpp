@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-#include "UnitTest++.h"
+#include <gtest/gtest.h>
+#include "OutputStreamStub.h"
 #include "SpecDoxReporter.h"
 #include "StubRunnable.h"
-#include "OutputStreamStub.h"
-#include <string>
 
-struct SpecDoxReporterTest {
+class SpecDoxReporterTest : public ::testing::Test {
+protected:    
     SpecDoxReporterTest() : outputStream(new OutputStreamStub), reporter(new CppSpec::SpecDoxReporter(*outputStream)) {
     }
 
@@ -36,39 +36,37 @@ struct SpecDoxReporterTest {
 	StubRunnable runnable;
 };
 
-SUITE(SpecDoxReporter) {
-    TEST_FIXTURE(SpecDoxReporterTest, specificationStarted) {
-        reporter->specificationStarted(runnable);
-        CHECK_EQUAL("TestSpec:\n", outputStream->written());
-    }
+TEST_F(SpecDoxReporterTest, specificationStarted) {
+    reporter->specificationStarted(runnable);
+    ASSERT_EQ("TestSpec:\n", outputStream->written());
+}
 
-    TEST_FIXTURE(SpecDoxReporterTest, specificationEnded) {
-        std::string name("TestSpec");
-        reporter->specificationEnded(name);
-        CHECK_EQUAL("TestSpec executed, 0 of 0 behaviors passed and 0 failed.\n\n", outputStream->written());
-    }
+TEST_F(SpecDoxReporterTest, specificationEnded) {
+    std::string name("TestSpec");
+    reporter->specificationEnded(name);
+    ASSERT_EQ("TestSpec executed, 0 of 0 behaviors passed and 0 failed.\n\n", outputStream->written());
+}
 
-    TEST_FIXTURE(SpecDoxReporterTest, behaviourEnded) {
-        std::string name("emptyStackShouldThrowExceptionOnPop");
-        reporter->behaviorStarted(name);
-        CHECK_EQUAL("  empty stack should throw exception on pop", outputStream->written());
-    }
+TEST_F(SpecDoxReporterTest, behaviourEnded) {
+    std::string name("emptyStackShouldThrowExceptionOnPop");
+    reporter->behaviorStarted(name);
+    ASSERT_EQ("  empty stack should throw exception on pop", outputStream->written());
+}
 
-    TEST_FIXTURE(SpecDoxReporterTest, behaviorSucceeded) {
-        reporter->behaviorSucceeded();
-        CHECK_EQUAL("\n", outputStream->written());
-		CHECK(!reporter->anyBehaviorFailed());
-    }
+TEST_F(SpecDoxReporterTest, behaviorSucceeded) {
+    reporter->behaviorSucceeded();
+    ASSERT_EQ("\n", outputStream->written());
+    ASSERT_FALSE(reporter->anyBehaviorFailed());
+}
 
-    TEST_FIXTURE(SpecDoxReporterTest, behaviorFailed) {
-        reporter->behaviorFailed("Foo.cpp", 10, "expected 1, but was 0");
-        CHECK_EQUAL(", expected 1, but was 0 in Foo.cpp:10\n", outputStream->written());
-		CHECK(reporter->anyBehaviorFailed());
-    }
+TEST_F(SpecDoxReporterTest, behaviorFailed) {
+    reporter->behaviorFailed("Foo.cpp", 10, "expected 1, but was 0");
+    ASSERT_EQ(", expected 1, but was 0 in Foo.cpp:10\n", outputStream->written());
+    ASSERT_TRUE(reporter->anyBehaviorFailed());
+}
 
-	TEST_FIXTURE(SpecDoxReporterTest, failureInformationIsRetainedBetweenSpecifications) {
-        reporter->behaviorFailed("Foo.cpp", 10, "expected 1, but was 0");
-		reporter->specificationStarted(runnable);
-		CHECK(reporter->anyBehaviorFailed());
-	}
+TEST_F(SpecDoxReporterTest, failureInformationIsRetainedBetweenSpecifications) {
+    reporter->behaviorFailed("Foo.cpp", 10, "expected 1, but was 0");
+    reporter->specificationStarted(runnable);
+    ASSERT_TRUE(reporter->anyBehaviorFailed());
 }

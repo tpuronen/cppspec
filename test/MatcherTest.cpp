@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-#include "UnitTest++.h"
+#include <gtest/gtest.h>
 #include "Matcher.h"
 
 using CppSpec::Matcher;
 
-TEST(findsSubstring) {
+TEST(MatcherTest, findsSubstring) {
     Matcher matcher("violence", Matcher::Search);
-    CHECK(matcher("Words like violence break the silence."));
+    EXPECT_TRUE(matcher("Words like violence break the silence."));
 }
 
-TEST(substringNotFound) {
+TEST(MatcherTest, substringNotFound) {
     Matcher matcher("enjoy", Matcher::Search);
-    CHECK(!matcher("Words like violence break the silence."));
+    EXPECT_FALSE(matcher("Words like violence break the silence."));
 }
 
-TEST(stringsMatch) {
+TEST(MatcherTest, stringsMatch) {
     Matcher matcher(".*violence.*silence.*", Matcher::Match);
-    CHECK(matcher("Words like violence break the silence."));
+    EXPECT_TRUE(matcher("Words like violence break the silence."));
 }
 
-TEST(stringsDoNotMatch) {
+TEST(MatcherTest, stringsDoNotMatch) {
     Matcher matcher(".*silence.*violence.*", Matcher::Match);
     !matcher;
-    CHECK(matcher("Words like violence break the silence."));
+    EXPECT_TRUE(matcher("Words like violence break the silence."));
 }
 
-TEST(copy) {
+TEST(MatcherTest, copy) {
     Matcher matcher(".*silence.*violence.*", Matcher::Match);
     Matcher that(matcher);
-    CHECK_EQUAL(that.getMode(), Matcher::Match);
-    CHECK_EQUAL(that.getExpression(), ".*silence.*violence.*");
+    EXPECT_EQ(that.getMode(), Matcher::Match);
+    EXPECT_EQ(that.getExpression(), ".*silence.*violence.*");
 }
