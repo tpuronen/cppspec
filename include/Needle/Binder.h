@@ -65,6 +65,9 @@ public:
         } catch (boost::bad_any_cast& e) {
             std::string description("Implementation for ");
             description += NeedleTypeNameResolver().getTypename<Interface>();
+            if (!id.empty()) {
+                description += " with id '" + id + "'";
+            }
             description += " is not bound.";
             throw InterfaceNotBoundToImplementationException(description);
         }
