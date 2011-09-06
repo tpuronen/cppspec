@@ -104,11 +104,16 @@ Reporter* SpecRunner::createReporter(OutputStream& outputStream) {
 
 void SpecRunner::runSpecs(const std::vector<std::string>& specificationsToRun) {
     ShouldBeRun shouldBeRun(specificationsToRun);
+    std::vector<boost::thread*> threads;
     BOOST_FOREACH(Runnable* specification, SpecificationRegistry::instance().getSpecifications()) {
         if(shouldBeRun(specification->getName())) {
-            boost::thread t(boost::ref(*specification));
-            t.join();
+            boost::thread* t = new boost::thread(boost::ref(*specification));
+            threads.push_back(t);
         }
+    }
+    BOOST_FOREACH(boost::thread* t, threads) {
+        t->join();
+        delete t;
     }
 }
 
