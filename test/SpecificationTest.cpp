@@ -17,6 +17,7 @@
 #include <gtest/gtest.h>
 #include "CppSpec.h"
 #include "DummyReporter.h"
+#include "Needle/Binder.h"
 
 using CppSpec::Specification;
 
@@ -77,18 +78,16 @@ TEST(EmptySpecificationTest, HasCountOfZero) {
 class SpecWithBehavioursTest : public ::testing::Test {
 protected:
     void SetUp() {
-        reporter = new DummyReporter();
+        Needle::Binder::instance().bind<CppSpec::Reporter>(new DummyReporter());
         spec = new SpecWithBehaviours();
     }
     
     void TearDown() {
         delete spec;
         spec = NULL;
-        delete reporter;
-        reporter = NULL;
+        Needle::Binder::instance().deleteBindings();
     }
     
-    DummyReporter* reporter;
     SpecWithBehaviours* spec;
 };
 
@@ -101,7 +100,9 @@ TEST_F(SpecWithBehavioursTest, CanCallContextForVoid) {
 }
 
 TEST_F(SpecWithBehavioursTest, BehaviorsAreExecuted) {
-    (*spec)(reporter);
-    EXPECT_EQ(3, reporter->success);
-    EXPECT_EQ(4, reporter->failed);
+    (*spec)();
+    Needle::Inject<CppSpec::Reporter> reporter;
+    const DummyReporter& dreporter = dynamic_cast<const DummyReporter&>(*reporter);
+    EXPECT_EQ(3, dreporter.success);
+    EXPECT_EQ(4, dreporter.failed);
 }

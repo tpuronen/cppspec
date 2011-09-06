@@ -22,6 +22,8 @@
 #include "JUnitReporter.h"
 #include "CuteReporter.h"
 #include "Runnable.h"
+#include "TimerStub.h"
+#include "Needle/Binder.h"
 
 using CppSpec::SpecRunner;
 using CppSpec::SpecificationRegistry;
@@ -52,39 +54,51 @@ SpecRunner* createSpecRunner() {
     return new SpecRunner(1, args);
 }
 
-TEST(SpecRunnerTest, SpecDoxReporterIsReturnedByDefault) {
+class SpecRunnerTest : public ::testing::Test {
+public:
+    void SetUp() {
+        Needle::Binder::instance().bind<CppSpec::Timer>(new TimerStub(), "behavior");
+        Needle::Binder::instance().bind<CppSpec::Timer>(new TimerStub(), "spec");
+    }
+    
+    void TearDown() {
+        Needle::Binder::instance().deleteBindings();
+    }
+};
+
+TEST_F(SpecRunnerTest, SpecDoxReporterIsReturnedByDefault) {
 	SpecRunner* specRunner = createSpecRunner();
     SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<SpecDoxReporter>(*specRunner);
 	delete specRunner;
 }
 
-TEST(SpecRunnerTest, CreateReporterReturnsJUnitReporterIfGivenInArguments) {
+TEST_F(SpecRunnerTest, CreateReporterReturnsJUnitReporterIfGivenInArguments) {
     const char* args[] = {"test", "-o", "junit", "--report-dir", "foo"};
     SpecRunner specRunner(5, args);
     SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<JUnitReporter>(specRunner);
 }
 
-TEST(SpecRunnerTest, CreateReporterReturnsJUnitReporterWithoutLogFilesIfGivenInArguments) {
+TEST_F(SpecRunnerTest, CreateReporterReturnsJUnitReporterWithoutLogFilesIfGivenInArguments) {
     const char* args[] = {"test", "-o", "junit", "--no-logs"};
     SpecRunner specRunner(4, args);
     SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<JUnitReporter>(specRunner);
 }
 
-TEST(SpecRunnerTest, CreateReporterReturnsCuteReporterIfGivenInArguments) {
+TEST_F(SpecRunnerTest, CreateReporterReturnsCuteReporterIfGivenInArguments) {
     const char* args[] = {"test", "-o", "cute"};
     SpecRunner specRunner(3, args);
     SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<CuteReporter>(specRunner);
 }
 
-TEST(SpecRunnerTest, ReturnZeroIfNoTestsExecuted) {
+TEST_F(SpecRunnerTest, ReturnZeroIfNoTestsExecuted) {
     SpecRunner* specRunner = createSpecRunner();
 	EXPECT_EQ(0, specRunner->runSpecifications());
 	delete specRunner;
 }
 
-struct DummyRunnable : public Runnable {
+/*struct DummyRunnable : public Runnable {
 	DummyRunnable() : name("dummy") {}
-	void operator()(Reporter* reporter) {
+	void operator()() {
 		reporter->specificationStarted(*this);
 		reporter->behaviorStarted("failing dummy");
 		reporter->behaviorFailed(__FILE__, __LINE__, "dummy fail");
@@ -101,4 +115,4 @@ TEST(SpecRunnerTest, ReturnOneIfATestFails) {
 	SpecificationRegistry::instance().addSpecification(&runnable);
 	EXPECT_EQ(1, specRunner->runSpecifications());
 	delete specRunner;
-}
+}*/

@@ -23,7 +23,7 @@ static std::string stubName = "TestSpec";
 
 class StubRunnable : public CppSpec::Runnable {
 public:
-	void operator()(CppSpec::Reporter* reporter) {}
+	void operator()() {}
 	const std::string& getName() const {return stubName;}
 	unsigned int getBehaviorCount() const {return 1;}
 };

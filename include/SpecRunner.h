@@ -28,7 +28,7 @@ public:
 private:
     OutputStream* createOutputStream();
     Reporter* createReporter(OutputStream& outputStream);
-    void runSpecs(const std::vector<std::string>& specifications, Reporter* reporter);
+    void runSpecs(const std::vector<std::string>& specifications);
 
 private:
     boost::program_options::variables_map* arguments;

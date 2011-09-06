@@ -67,17 +67,14 @@ SpecRunner::~SpecRunner() {
 int SpecRunner::runSpecifications() {
     Needle::Binder::instance().bind<Timer>(new BoostTimer(), "behavior");
     Needle::Binder::instance().bind<Timer>(new BoostTimer(), "spec");
-
     OutputStream* outputStream = createOutputStream();
-    Reporter* reporter = createReporter(*outputStream);
+    Needle::Binder::instance().bind<Reporter>(createReporter(*outputStream));
 
-    runSpecs(specificationsToRun, reporter);
+    boost::shared_ptr<Reporter> reporter = Needle::Binder::instance().get<Reporter>();
+    runSpecs(specificationsToRun);
 
-	bool anyFails(reporter->anyBehaviorFailed());
-
-    delete reporter;
     delete outputStream;
-	return anyFails;
+	return reporter->anyBehaviorFailed();
 }
 
 OutputStream* SpecRunner::createOutputStream() {
@@ -104,11 +101,11 @@ Reporter* SpecRunner::createReporter(OutputStream& outputStream) {
     return new SpecDoxReporter(outputStream);
 }
 
-void SpecRunner::runSpecs(const std::vector<std::string>& specificationsToRun, Reporter* reporter) {
+void SpecRunner::runSpecs(const std::vector<std::string>& specificationsToRun) {
     ShouldBeRun shouldBeRun(specificationsToRun);
     BOOST_FOREACH(Runnable* specification, SpecificationRegistry::instance().getSpecifications()) {
         if(shouldBeRun(specification->getName())) {
-            (*specification)(reporter);
+            (*specification)();
         }
     }
 }

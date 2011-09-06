@@ -88,24 +88,24 @@ public: // from Runnable
     }
 
 protected:
-    void executeBehavior(Functor& behavior, Reporter* reporter) {
-        reporter->behaviorStarted(behavior.getName());
+    void executeBehavior(Functor& behavior, Reporter& reporter) {
+        reporter.behaviorStarted(behavior.getName());
         try {
             behavior();
-            reporter->behaviorSucceeded();
+            reporter.behaviorSucceeded();
         }
         catch (SpecifyFailedException& e) {
-            reporter->behaviorFailed(e.file, e.line, e.message);
+            reporter.behaviorFailed(e.file, e.line, e.message);
         }
         catch (std::exception& e) {
             std::stringstream msg;
             msg << TypeNameResolver().getTypename(e) << "[" << e.what() << "] occured in " << behavior.getName();
-            reporter->behaviorFailed("", 0, msg.str());
+            reporter.behaviorFailed("", 0, msg.str());
         }
         catch (...) {
             std::stringstream msg;
             msg << "An exception occured in " << behavior.getName();
-            reporter->behaviorFailed("", 0, msg.str());
+            reporter.behaviorFailed("", 0, msg.str());
         }
     }
 
