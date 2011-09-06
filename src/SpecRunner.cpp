@@ -25,6 +25,7 @@
 #include "Needle/Binder.h"
 #include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
+#include <boost/thread.hpp>
 
 namespace CppSpec {
 
@@ -105,7 +106,8 @@ void SpecRunner::runSpecs(const std::vector<std::string>& specificationsToRun) {
     ShouldBeRun shouldBeRun(specificationsToRun);
     BOOST_FOREACH(Runnable* specification, SpecificationRegistry::instance().getSpecifications()) {
         if(shouldBeRun(specification->getName())) {
-            (*specification)();
+            boost::thread t(boost::ref(*specification));
+            t.join();
         }
     }
 }
