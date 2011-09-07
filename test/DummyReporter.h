@@ -18,7 +18,6 @@
 #define DUMMYREPORTER_H_
 
 #include "Reporter.h"
-#include "Runnable.h"
 
 class DummyReporter : public CppSpec::Reporter {
 public:
@@ -26,12 +25,8 @@ public:
 	~DummyReporter();
 
 public: // from Reporter
-	void specificationStarted(const CppSpec::Runnable& /*specName*/);
-	void behaviorStarted(const std::string& /*behavior*/);
-	void behaviorSucceeded();
-	void behaviorFailed(const std::string&, int, const std::string& description);
-	void specificationEnded(const std::string& /*specName*/);
-	bool anyBehaviorFailed() const;
+	void addSpecification(const CppSpec::SpecResult& results);
+    bool anyBehaviorFailed() const;
 
 public:
 	int success;

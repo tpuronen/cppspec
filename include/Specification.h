@@ -21,6 +21,7 @@
 #include "Reporter.h"
 #include "ShouldType.h"
 #include "ContextHolder.h"
+#include "SpecResult.h"
 #include "Needle/Inject.h"
 #include <boost/bind.hpp>
 
@@ -103,16 +104,19 @@ public: // Expectations, these are used through specify-macro
 
 public: // from Runnable
 	void operator()() {
-        Needle::Inject<Reporter> reporter;
-        reporter->specificationStarted(*this);
+        SpecResult results(SpecificationBase<Derived>::getName());
 		const int count(SpecificationBase<Derived>::behaviors.size());
+        Needle::Inject<Reporter> reporter;
+        Needle::Inject<Timer> timer("spec");
+        timer->start();
 		for(int i = 0; i < count; ++i) {
 			contextPtr = static_cast<Derived*>(this)->createContext();
             Functor& behavior = *(SpecificationBase<Derived>::behaviors[i]);
-            SpecificationBase<Derived>::executeBehavior(behavior, *reporter);
+            SpecificationBase<Derived>::executeBehavior(behavior, results);
 			static_cast<Derived*>(this)->destroyContext();
 		}
-		reporter->specificationEnded(SpecificationBase<Derived>::getName());
+        results.setDuration(timer->stop());
+        reporter->addSpecification(results);
 	}
 
 public: // Vocabulary
@@ -141,14 +145,15 @@ public:
 
 public: // from Runnable
     void operator()() {
-        Needle::Inject<Reporter> reporter;
-        reporter->specificationStarted(*this);
-        const int count(SpecificationBase<Derived>::behaviors.size());
+        SpecResult results(SpecificationBase<Derived>::getName());
+		const int count(SpecificationBase<Derived>::behaviors.size());
         for(int i = 0; i < count; ++i) {
             Functor& behavior = *(SpecificationBase<Derived>::behaviors[i]);
-            SpecificationBase<Derived>::executeBehavior(behavior, *reporter);
+            SpecificationBase<Derived>::executeBehavior(behavior, results);
         }
-        reporter->specificationEnded(SpecificationBase<Derived>::getName());
+        Needle::Inject<Reporter> reporter;
+        reporter->addSpecification(results);
+        //reporter->specificationEnded(SpecificationBase<Derived>::getName());
     }
 
 public:

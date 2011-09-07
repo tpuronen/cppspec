@@ -22,10 +22,10 @@ DummyReporter::DummyReporter() : success(0), failed(0) {
 DummyReporter::~DummyReporter() {
 }
 
-void DummyReporter::specificationStarted(const CppSpec::Runnable& /*specName*/) {
+/*void DummyReporter::specificationStarted(const CppSpec::Runnable& specName) {
 }
 
-void DummyReporter::behaviorStarted(const std::string& /*behavior*/) {
+void DummyReporter::behaviorStarted(const std::string& behavior) {
 }
 
 void DummyReporter::behaviorSucceeded() {
@@ -37,7 +37,11 @@ void DummyReporter::behaviorFailed(const std::string&, int, const std::string& d
 	lastFailureDescription = description;
 }
 
-void DummyReporter::specificationEnded(const std::string& /*specName*/) {
+void DummyReporter::specificationEnded(const std::string& specName) {
+}*/
+
+void DummyReporter::addSpecification(const CppSpec::SpecResult& results) {
+    
 }
 
 bool DummyReporter::anyBehaviorFailed() const {

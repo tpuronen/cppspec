@@ -21,19 +21,15 @@
 
 namespace CppSpec {
 
-class Runnable;
+class SpecResult;
 
 class Reporter {
 public:
 	virtual ~Reporter() {}
 
 public:
-	virtual void specificationStarted(const Runnable& specification) = 0;
-	virtual void behaviorStarted(const std::string& behavior) = 0;
-	virtual void behaviorSucceeded() = 0;
-	virtual void behaviorFailed(const std::string& file, int line, const std::string& description) = 0;
-	virtual void specificationEnded(const std::string& specName) = 0;
-	virtual bool anyBehaviorFailed() const = 0;
+    virtual void addSpecification(const SpecResult& results) = 0;
+    virtual bool anyBehaviorFailed() const = 0;
 };
 
 }

@@ -19,6 +19,7 @@
 
 #include "Reporter.h"
 #include <iostream>
+#include <boost/thread/mutex.hpp>
 
 namespace CppSpec {
 
@@ -29,15 +30,10 @@ public:
 	explicit SpecDoxReporter(OutputStream& outputStream);
 	~SpecDoxReporter();
 
-	void specificationStarted(const Runnable& specification);
-	void behaviorStarted(const std::string& behavior);
-	void behaviorSucceeded();
-	void behaviorFailed(const std::string& file, int line, const std::string& description);
-	void specificationEnded(const std::string& specName);
-	bool anyBehaviorFailed() const;
+    void addSpecification(const SpecResult& results);
+    bool anyBehaviorFailed() const;
 
 private:
-	void resetCounters();
 	std::string separateCamelCasedWords(const std::string& text);
 
 private:
@@ -46,10 +42,8 @@ private:
 
 private:
     OutputStream& outputStream;
-	int count;
-	int failedCount;
-	int successCount;
-	bool failOccured;
+    bool anyFailed;
+    boost::mutex io_mutex;
 };
 
 }

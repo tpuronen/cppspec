@@ -17,7 +17,7 @@
 #include <gtest/gtest.h>
 #include "OutputStreamStub.h"
 #include "SpecDoxReporter.h"
-#include "StubRunnable.h"
+#include "SpecResult.h"
 
 class SpecDoxReporterTest : public ::testing::Test {
 protected:    
@@ -33,40 +33,24 @@ protected:
 
     OutputStreamStub* outputStream;
     CppSpec::SpecDoxReporter* reporter;
-	StubRunnable runnable;
 };
 
-TEST_F(SpecDoxReporterTest, specificationStarted) {
-    reporter->specificationStarted(runnable);
-    ASSERT_EQ("TestSpec:\n", outputStream->written());
+TEST_F(SpecDoxReporterTest, specificationRun) {
+    CppSpec::SpecResult results("TestSpec");
+    reporter->addSpecification(results);
+    EXPECT_EQ("TestSpec:\nTestSpec executed, 0 of 0 behaviors passed and 0 failed.\n\n", outputStream->written());
 }
 
-TEST_F(SpecDoxReporterTest, specificationEnded) {
-    std::string name("TestSpec");
-    reporter->specificationEnded(name);
-    ASSERT_EQ("TestSpec executed, 0 of 0 behaviors passed and 0 failed.\n\n", outputStream->written());
+TEST_F(SpecDoxReporterTest, specificationWithPassingBehavior) {
+    CppSpec::SpecResult results("TestSpec");
+    results.addPass("thisShouldPass", "00.010000");
+    reporter->addSpecification(results);
+    EXPECT_EQ("TestSpec:\n  this should pass\nTestSpec executed, 1 of 1 behaviors passed and 0 failed.\n\n", outputStream->written());
 }
 
-TEST_F(SpecDoxReporterTest, behaviourEnded) {
-    std::string name("emptyStackShouldThrowExceptionOnPop");
-    reporter->behaviorStarted(name);
-    ASSERT_EQ("  empty stack should throw exception on pop", outputStream->written());
-}
-
-TEST_F(SpecDoxReporterTest, behaviorSucceeded) {
-    reporter->behaviorSucceeded();
-    ASSERT_EQ("\n", outputStream->written());
-    ASSERT_FALSE(reporter->anyBehaviorFailed());
-}
-
-TEST_F(SpecDoxReporterTest, behaviorFailed) {
-    reporter->behaviorFailed("Foo.cpp", 10, "expected 1, but was 0");
-    ASSERT_EQ(", expected 1, but was 0 in Foo.cpp:10\n", outputStream->written());
-    ASSERT_TRUE(reporter->anyBehaviorFailed());
-}
-
-TEST_F(SpecDoxReporterTest, failureInformationIsRetainedBetweenSpecifications) {
-    reporter->behaviorFailed("Foo.cpp", 10, "expected 1, but was 0");
-    reporter->specificationStarted(runnable);
-    ASSERT_TRUE(reporter->anyBehaviorFailed());
+TEST_F(SpecDoxReporterTest, specificationWithFailingBehavior) {
+    CppSpec::SpecResult results("TestSpec");
+    results.addFail("thisShouldPass", "00.010000", "file.cpp", 10, "an exception occured");
+    reporter->addSpecification(results);
+    EXPECT_EQ("TestSpec:\n  this should pass, an exception occured in file.cpp:10\nTestSpec executed, 0 of 1 behaviors passed and 1 failed.\n\n", outputStream->written());
 }

@@ -19,10 +19,10 @@
 
 #include "Reporter.h"
 #include "Timer.h"
+#include "Needle/Inject.h"
 #include <vector>
 #include <string>
-
-#include "Needle/Inject.h"
+#include <boost/thread/mutex.hpp>
 
 namespace CppSpec {
 
@@ -36,11 +36,7 @@ public:
 	~JUnitReporter();
 
 public: // from Reporter
-	void specificationStarted(const Runnable& specification);
-	void behaviorStarted(const std::string& behavior);
-	void behaviorSucceeded();
-	void behaviorFailed(const std::string& file, int line, const std::string& description);
-	void specificationEnded(const std::string& specName);
+    void addSpecification(const SpecResult& results);
 	bool anyBehaviorFailed() const;
 
 public:
@@ -59,8 +55,6 @@ public:
 
 private:
 	OutputStream* createOutputStream();
-	void calculateResults(int& pass, int& fails);
-	void printSpecResults(OutputStream& output);
 	std::string currentTime();
 
 private:
@@ -68,14 +62,11 @@ private:
 	JUnitReporter& operator= (const JUnitReporter& rhs);
 
 private:
-	std::string specificationName;
-	std::string behaviorName;
-	std::vector<Result> behaviorResults;
 	bool createLogFiles;
 	std::string reportDirectory;
 	bool failOccured;
-	Needle::Inject<Timer> behaviorTimer;
-    Needle::Inject<Timer> specificationTimer;
+    OutputStream* output;
+    boost::mutex io_mutex;
 };
 
 }

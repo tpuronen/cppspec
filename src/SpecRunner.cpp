@@ -19,7 +19,6 @@
 #include "Reporter.h"
 #include "SpecDoxReporter.h"
 #include "JUnitReporter.h"
-#include "CuteReporter.h"
 #include "BoostTimer.h"
 #include "ConsoleOutputStream.h"
 #include "Needle/Binder.h"
@@ -47,7 +46,7 @@ private:
 SpecRunner::SpecRunner(int argc, const char* argv[]) {
     boost::program_options::options_description options("Options");
     options.add_options()
-        ("output,o", boost::program_options::value<std::string>(), "define output format. Allowed values: junit console cute")
+        ("output,o", boost::program_options::value<std::string>(), "define output format. Allowed values: junit console")
         ("no-logs", "do not create log files when using JUnitReporter. No effect on other reporters")
         ("report-dir",  boost::program_options::value<std::string>(), "directory where JUnit reports are created")
         ("specification,s", boost::program_options::value<std::vector<std::string> >(&specificationsToRun),"specification to be run, if multiple specifications will be run, the option can be repeated")
@@ -66,16 +65,16 @@ SpecRunner::~SpecRunner() {
 }
 
 int SpecRunner::runSpecifications() {
-    Needle::Binder::instance().bind<Timer>(new BoostTimer(), "behavior");
-    Needle::Binder::instance().bind<Timer>(new BoostTimer(), "spec");
     OutputStream* outputStream = createOutputStream();
     Needle::Binder::instance().bind<Reporter>(createReporter(*outputStream));
-
-    boost::shared_ptr<Reporter> reporter = Needle::Binder::instance().get<Reporter>();
+    Needle::Binder::instance().bind<Timer>(new BoostTimer(), "spec");
+    Needle::Binder::instance().bind<Timer>(new BoostTimer(), "behavior");
+    
     runSpecs(specificationsToRun);
-
+    
     delete outputStream;
-	return reporter->anyBehaviorFailed();
+    Needle::Inject<Reporter> reporter;
+    return reporter->anyBehaviorFailed();
 }
 
 OutputStream* SpecRunner::createOutputStream() {
@@ -95,8 +94,6 @@ Reporter* SpecRunner::createReporter(OutputStream& outputStream) {
                 }
                 return new JUnitReporter(reportPath);
             }
-        } else if (selectedReporter == "cute") {
-            return new CuteReporter();
         }
     }
     return new SpecDoxReporter(outputStream);

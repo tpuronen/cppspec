@@ -20,7 +20,5 @@
 
 int main(int argc, char* argv[]) {
 	::testing::InitGoogleTest(&argc, argv);
-    Needle::Binder::instance().bind<CppSpec::Timer, TimerStub>(new TimerStub(), "spec");
-    Needle::Binder::instance().bind<CppSpec::Timer, TimerStub>(new TimerStub(), "behavior");
 	return RUN_ALL_TESTS();
 }

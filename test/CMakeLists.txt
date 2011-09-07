@@ -18,11 +18,11 @@ find_package(GTest REQUIRED)
 include_directories(../include ${GTEST_INCLUDE_DIRS} ${BOOST_INCLUDE_DIRS})
 
 set(CPPSPEC_SRCS ../src/SpecDoxReporter.cpp ../src/Matcher.cpp ../src/SpecificationRegistry.cpp ../src/SpecRunner.cpp ../src/BoostTimer.cpp 
-    ../src/CuteReporter.cpp ../src/JUnitReporter.cpp ../src/FileOutputStream.cpp ../src/ConsoleOutputStream.cpp ../src/Util.cpp)
+    ../src/JUnitReporter.cpp ../src/FileOutputStream.cpp ../src/ConsoleOutputStream.cpp ../src/Util.cpp ../src/SpecResult.cpp)
 
 set(CPPSPEC_TEST_SRCS main.cpp JUnitReporterTest.cpp SpecDoxReporterTest.cpp BoostTimerTest.cpp SpecificationRegistryTest.cpp
     InvokingTypeTest.cpp TypeHasStreamingOperatorTest.cpp VoidSpecification.cpp MatcherTest.cpp
-    ExpectationTest.cpp InvocationTest.cpp ExceptionThrowingSpecificationTest.cpp CuteReporterTest.cpp SpecificationTest.cpp
+    ExpectationTest.cpp InvocationTest.cpp ExceptionThrowingSpecificationTest.cpp SpecificationTest.cpp
     DummyReporter.cpp SpecRunnerTest.cpp)
 
 add_executable(CppSpecGTest ${CPPSPEC_SRCS} ${CPPSPEC_TEST_SRCS})

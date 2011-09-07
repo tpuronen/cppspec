@@ -16,105 +16,91 @@
 
 #include "JUnitReporter.h"
 #include "Runnable.h"
-#include <iostream>
-#include <boost/typeof/typeof.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include "FileOutputStream.h"
 #include "ConsoleOutputStream.h"
+#include "SpecResult.h"
+#include <iostream>
+#include <algorithm>
+#include <boost/typeof/typeof.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
+// Local helpers
+bool hasFailed(const CppSpec::SpecResult::BehaviorResult& result) {
+    return !result.passed;
+}
+
+bool hasPassed(const CppSpec::SpecResult::BehaviorResult& result) {
+    return result.passed;
+}
+
+int calculateFailures(const CppSpec::SpecResult& results) {
+    return std::count_if(results.firstBehavior(), results.lastBehavior(), hasFailed);
+}
+
+int calculatePasses(const CppSpec::SpecResult& results) {
+    return std::count_if(results.firstBehavior(), results.lastBehavior(), hasPassed);
+}
 
 namespace CppSpec {
 
 JUnitReporter::JUnitReporter()
-: specificationName(), behaviorName(), behaviorResults(), createLogFiles(false), reportDirectory(), failOccured(false),
-    behaviorTimer("behavior"), specificationTimer("spec")
+: createLogFiles(false), reportDirectory(), failOccured(false), output(createOutputStream())
 {
+    (*output) << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << "\n";
 }
 
 JUnitReporter::JUnitReporter(const std::string& reportDirectory)
-: specificationName(), behaviorName(), behaviorResults(), createLogFiles(true), reportDirectory(reportDirectory), failOccured(false),
-    behaviorTimer("behavior"), specificationTimer("spec")
+: createLogFiles(true), reportDirectory(reportDirectory), failOccured(false), output(createOutputStream())
 {
+    (*output) << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << "\n";
 }
 
 JUnitReporter::~JUnitReporter() {
+    delete output;
 }
-
-void JUnitReporter::specificationStarted(const Runnable& specification) {
-	specificationName = specification.getName();
-	behaviorResults.clear();
-	specificationTimer->start();
-}
-
-void JUnitReporter::behaviorStarted(const std::string& behavior) {
-	behaviorName = behavior;
-	behaviorTimer->start();
-}
-
-
-void JUnitReporter::behaviorSucceeded() {
-	behaviorResults.push_back(Result(behaviorName, "", true, behaviorTimer->stop(), "", 0));
-}
-
-void JUnitReporter::behaviorFailed(const std::string& file, int line, const std::string& description) {
-	behaviorResults.push_back(Result(behaviorName, description, false, behaviorTimer->stop(), file, line));
-	failOccured = true;
-}
-
-void JUnitReporter::specificationEnded(const std::string& /*specName*/) {
-	int pass(0);
-	int fails(0);
-	OutputStream* output = createOutputStream();
-	calculateResults(pass, fails);
-	std::string time = currentTime();
-	(*output) << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << "\n";
-	(*output) << "<testsuite failures=\"" << fails << "\" name=\"" << specificationName << "\" tests=\"" << pass + fails << "\" time=\"" << 
-        specificationTimer->stop() << "\" timestamp=\"" << time << "\">" << "\n";
-	printSpecResults(*output);
-	(*output) << "</testsuite>" << "\n";
-
-	delete output;
+    
+void JUnitReporter::addSpecification(const SpecResult& results) {
+    boost::lock_guard<boost::mutex> lock_guard(io_mutex);
+    int fails = calculateFailures(results);
+    int pass = calculatePasses(results);
+    failOccured = fails != 0;
+	(*output) << "<testsuite failures=\"" << fails << "\" name=\"" << results.getSpecificationName() << "\" tests=\"" 
+        << pass + fails << "\" time=\"" << results.getDuration() << "\" timestamp=\"" << currentTime() << "\">" << "\n";
+	
+    for (BOOST_AUTO(it, results.firstBehavior()); it != results.lastBehavior(); ++it) {
+        (*output)   << "<testcase classname=\""
+                    << results.getSpecificationName()
+                    << "\" name=\""
+                    << it->name
+                    << "\" time=\""
+                    << it->duration << "\"";
+        if (it->passed) {
+            (*output) << " />" << "\n";
+        } else {
+            (*output) << ">" << "\n";
+			(*output) << "<error message=\"" << it->message << " at " << it->file << ":" << it->line << "\" />" << "\n";
+			(*output) << "</testcase>" << "\n";
+        }
+    }
+    
+    (*output) << "</testsuite>" << "\n";
 }
 
 bool JUnitReporter::anyBehaviorFailed() const {
-	return failOccured;
+    return failOccured;
 }
-
+    
 OutputStream* JUnitReporter::createOutputStream() {
-	if(createLogFiles) {
+	/*if(createLogFiles) {
 		return new FileOutputStream(reportDirectory, specificationName);
-	}
+	}*/
 
 	return new ConsoleOutputStream;
 }
 
-void JUnitReporter::calculateResults(int& pass, int& fails) {
-	for(BOOST_AUTO(it, behaviorResults.begin()); it != behaviorResults.end(); ++it) {
-		it->pass ? ++pass : ++fails;
-	}
-}
-
-void JUnitReporter::printSpecResults(OutputStream& output) {
-	for(BOOST_AUTO(it, behaviorResults.begin()); it != behaviorResults.end(); ++it) {
-		output  << "<testcase classname=\"" 
-                << specificationName 
-                << "\" name=\"" 
-                << it->behaviorName 
-                << "\" time=\"" 
-                << it->duration << "\"";
-		if(!it->pass) {
-			output << ">" << "\n";
-			output << "<error message=\"" << it->reason << " at " << it->file << ":" << it->line << "\" />" << "\n";
-			output << "</testcase>" << "\n";
-		}
-		else {
-			output << " />" << "\n";
-		}
-	}
-}
-
 std::string JUnitReporter::currentTime() {
-    boost::posix_time::ptime currentTime = boost::posix_time::second_clock::local_time();
-    return boost::posix_time::to_simple_string(currentTime);
+    using namespace boost::posix_time;
+    return to_simple_string(second_clock::local_time());
 }
 
 }

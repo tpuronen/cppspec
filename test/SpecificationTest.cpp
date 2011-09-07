@@ -17,6 +17,7 @@
 #include <gtest/gtest.h>
 #include "CppSpec.h"
 #include "DummyReporter.h"
+#include "TimerStub.h"
 #include "Needle/Binder.h"
 
 using CppSpec::Specification;
@@ -79,6 +80,7 @@ class SpecWithBehavioursTest : public ::testing::Test {
 protected:
     void SetUp() {
         Needle::Binder::instance().bind<CppSpec::Reporter>(new DummyReporter());
+        Needle::Binder::instance().bind<CppSpec::Timer>(new TimerStub(), "behavior");
         spec = new SpecWithBehaviours();
     }
     

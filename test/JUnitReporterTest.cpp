@@ -16,8 +16,7 @@
 
 #include <gtest/gtest.h>
 #include "JUnitReporter.h"
-#include "StubRunnable.h"
-
+#include "SpecResult.h"
 
 class JUnitReporterTest : public ::testing::Test {
 protected:
@@ -27,14 +26,9 @@ protected:
 		std::cout.rdbuf(stream->rdbuf());
         
 		reporter = new CppSpec::JUnitReporter();
-		std::string behaviorName("Behavior");
-		reporter->specificationStarted(specification);
-		reporter->behaviorStarted(behaviorName);
-		name = new std::string("Specification");
     }
     
     virtual void TearDown() {
-        delete name;
         delete reporter;
         std::cout.rdbuf(coutBuf);
         delete stream;
@@ -43,30 +37,27 @@ protected:
     CppSpec::JUnitReporter* reporter;
 	std::stringstream* stream;
 	std::streambuf* coutBuf;
-	std::string* name;
-	StubRunnable specification;
 };
 
-TEST_F(JUnitReporterTest, oneSuite) {
-    reporter->behaviorSucceeded();
-    reporter->specificationEnded(*name);
+TEST_F(JUnitReporterTest, oneSuiteWithOnePass) {
+    CppSpec::SpecResult result("TestSpec");
+    result.addPass("Behavior", "00.010000");
+    result.setDuration("00.010000");
+    reporter->addSpecification(result);
     const std::string& log(stream->str());
-    
+
     EXPECT_NE(std::string::npos, log.find("tests=\"1\""));
     EXPECT_NE(std::string::npos, log.find("<testsuite failures=\"0\" name=\"TestSpec\" tests=\"1\" time=\"00.010000\""));
     EXPECT_NE(std::string::npos, log.find("<testcase classname=\"TestSpec\" name=\"Behavior\" time=\"00.010000\""));
-}
-
-TEST_F(JUnitReporterTest, onePass) {
-    reporter->behaviorSucceeded();
-    reporter->specificationEnded(*name);
-    EXPECT_NE(std::string::npos, stream->str().find("failures=\"0\""));
     EXPECT_FALSE(reporter->anyBehaviorFailed());
 }
 
 TEST_F(JUnitReporterTest, oneFail) {
-    reporter->behaviorFailed("Foo.cpp", 10, "An exception occured");
-    reporter->specificationEnded(*name);
-    EXPECT_NE(std::string::npos, stream->str().find("failures=\"1\""));
+    CppSpec::SpecResult result("TestSpec");
+    result.addFail("Behavior", "00.010000", "Foo.cpp", 10, "An exception occured");
+    reporter->addSpecification(result);
+    const std::string& log(stream->str());
+    
+    EXPECT_NE(std::string::npos, log.find("failures=\"1\""));
     EXPECT_TRUE(reporter->anyBehaviorFailed());
 }

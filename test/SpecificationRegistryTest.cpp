@@ -26,5 +26,5 @@ TEST(SpecificationRegistryTest, canAddSpecification)
 	StubRunnable runnable;
 	const size_t initialSpecificationCount(registry.getSpecifications().size());
 	registry.addSpecification(&runnable);
-	ASSERT_EQ(initialSpecificationCount + 1, registry.getSpecifications().size());
+	EXPECT_EQ(initialSpecificationCount + 1, registry.getSpecifications().size());
 }

@@ -20,7 +20,6 @@
 #include "SpecificationRegistry.h"
 #include "SpecDoxReporter.h"
 #include "JUnitReporter.h"
-#include "CuteReporter.h"
 #include "Runnable.h"
 #include "TimerStub.h"
 #include "Needle/Binder.h"
@@ -29,7 +28,6 @@ using CppSpec::SpecRunner;
 using CppSpec::SpecificationRegistry;
 using CppSpec::SpecDoxReporter;
 using CppSpec::JUnitReporter;
-using CppSpec::CuteReporter;
 using CppSpec::Runnable;
 using CppSpec::Reporter;
 
@@ -82,12 +80,6 @@ TEST_F(SpecRunnerTest, CreateReporterReturnsJUnitReporterWithoutLogFilesIfGivenI
     const char* args[] = {"test", "-o", "junit", "--no-logs"};
     SpecRunner specRunner(4, args);
     SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<JUnitReporter>(specRunner);
-}
-
-TEST_F(SpecRunnerTest, CreateReporterReturnsCuteReporterIfGivenInArguments) {
-    const char* args[] = {"test", "-o", "cute"};
-    SpecRunner specRunner(3, args);
-    SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<CuteReporter>(specRunner);
 }
 
 TEST_F(SpecRunnerTest, ReturnZeroIfNoTestsExecuted) {

@@ -17,51 +17,40 @@
 #include "SpecDoxReporter.h"
 #include "Runnable.h"
 #include "ConsoleOutputStream.h"
+#include "SpecResult.h"
 #include <cctype>
 
 namespace CppSpec {
-
-SpecDoxReporter::SpecDoxReporter(OutputStream& outputStream) : outputStream(outputStream), count(0), failedCount(0), successCount(0), failOccured(false) {
+    
+SpecDoxReporter::SpecDoxReporter(OutputStream& outputStream) : outputStream(outputStream) {
 }
 
 SpecDoxReporter::~SpecDoxReporter() {
 }
 
-void SpecDoxReporter::specificationStarted(const Runnable& specification) {
-	outputStream << specification.getName() << ":" << "\n";
-	resetCounters();
-	}
-
-void SpecDoxReporter::behaviorStarted(const std::string& behavior) {
-	outputStream << "  " << separateCamelCasedWords(behavior);
-	++count;
-	}
-
-void SpecDoxReporter::behaviorSucceeded() {
-	outputStream << "\n";
-	++successCount;
-}
-
-void SpecDoxReporter::behaviorFailed(const std::string& file, int line, const std::string& description) {
-	outputStream << ", " << description << " in " << file << ":" << line << "\n";
-	++failedCount;
-	failOccured = true;
-}
-
-void SpecDoxReporter::specificationEnded(const std::string& specName) {
-	outputStream << specName << " executed, " << successCount << " of " << count << " behaviors passed and " << failedCount << " failed." << "\n" << "\n";
+void SpecDoxReporter::addSpecification(const SpecResult &results) {
+    boost::lock_guard<boost::mutex> lock_guard(io_mutex);
+    int pass(0);
+    int fail(0);
+    outputStream << results.getSpecificationName() << ":" << "\n";
+    for (std::vector<SpecResult::BehaviorResult>::const_iterator it = results.firstBehavior(); it != results.lastBehavior(); it++) {
+        outputStream << "  " << separateCamelCasedWords(it->name);
+        if (it->passed) {
+            outputStream << "\n";
+            ++pass;
+        } else {
+            outputStream << ", " << it->message << " in " << it->file << ":" << it->line << "\n";
+            ++fail;
+        }
+    }
+    anyFailed = fail != 0;
+    outputStream << results.getSpecificationName() << " executed, " << pass << " of " << pass + fail << " behaviors passed and " << fail << " failed." << "\n" << "\n";
 }
 
 bool SpecDoxReporter::anyBehaviorFailed() const {
-	return failOccured;
+    return anyFailed;
 }
-
-void SpecDoxReporter::resetCounters() {
-	count = 0;
-	failedCount = 0;
-	successCount = 0;
-}
-
+    
 std::string SpecDoxReporter::separateCamelCasedWords(const std::string& text) {
 	std::string result;
 	std::string::iterator it = (const_cast<std::string&>(text)).begin();

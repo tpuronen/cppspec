@@ -26,6 +26,9 @@
 #include "TypeHasStreamingOperator.h"
 #include "Matcher.h"
 #include "InvokingType.h"
+#include "SpecResult.h"
+#include "Timer.h"
+#include "Needle/Inject.h"
 #include <vector>
 #include <sstream>
 
@@ -88,24 +91,25 @@ public: // from Runnable
     }
 
 protected:
-    void executeBehavior(Functor& behavior, Reporter& reporter) {
-        reporter.behaviorStarted(behavior.getName());
+    void executeBehavior(Functor& behavior, SpecResult& results) {
+        Needle::Inject<Timer> timer("behavior");
         try {
+            timer->start();
             behavior();
-            reporter.behaviorSucceeded();
+            results.addPass(behavior.getName(), timer->stop());
         }
         catch (SpecifyFailedException& e) {
-            reporter.behaviorFailed(e.file, e.line, e.message);
+            results.addFail(behavior.getName(), timer->stop(), e.file, e.line, e.message);
         }
         catch (std::exception& e) {
             std::stringstream msg;
             msg << TypeNameResolver().getTypename(e) << "[" << e.what() << "] occured in " << behavior.getName();
-            reporter.behaviorFailed("", 0, msg.str());
+            results.addFail(behavior.getName(), timer->stop(), msg.str());
         }
         catch (...) {
             std::stringstream msg;
             msg << "An exception occured in " << behavior.getName();
-            reporter.behaviorFailed("", 0, msg.str());
+            results.addFail(behavior.getName(), timer->stop(), msg.str());
         }
     }
 
