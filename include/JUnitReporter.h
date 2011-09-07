@@ -54,8 +54,9 @@ public:
 	};
 
 private:
-	OutputStream* createOutputStream();
+	OutputStream* createOutputStream(const std::string& reportDirectory);
 	std::string currentTime();
+    int countCases(const CppSpec::SpecResult& results, bool passed);
 
 private:
 	JUnitReporter(const JUnitReporter& rhs);
@@ -65,7 +66,6 @@ private:
 	bool createLogFiles;
 	std::string reportDirectory;
 	bool failOccured;
-    OutputStream* output;
     boost::mutex io_mutex;
 };
 

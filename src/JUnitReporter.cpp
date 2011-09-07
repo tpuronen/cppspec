@@ -21,7 +21,6 @@
 #include "SpecResult.h"
 #include <iostream>
 #include <algorithm>
-#include <boost/typeof/typeof.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 // Local helpers
@@ -33,38 +32,27 @@ bool hasPassed(const CppSpec::SpecResult::BehaviorResult& result) {
     return result.passed;
 }
 
-int calculateFailures(const CppSpec::SpecResult& results) {
-    return std::count_if(results.firstBehavior(), results.lastBehavior(), hasFailed);
-}
-
-int calculatePasses(const CppSpec::SpecResult& results) {
-    return std::count_if(results.firstBehavior(), results.lastBehavior(), hasPassed);
-}
-
 namespace CppSpec {
 
 JUnitReporter::JUnitReporter()
-: createLogFiles(false), reportDirectory(), failOccured(false), output(createOutputStream())
-{
-    (*output) << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << "\n";
+: createLogFiles(false), reportDirectory(), failOccured(false) {
 }
 
 JUnitReporter::JUnitReporter(const std::string& reportDirectory)
-: createLogFiles(true), reportDirectory(reportDirectory), failOccured(false), output(createOutputStream())
-{
-    (*output) << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << "\n";
+: createLogFiles(true), reportDirectory(reportDirectory), failOccured(false) {
 }
 
 JUnitReporter::~JUnitReporter() {
-    delete output;
 }
     
 void JUnitReporter::addSpecification(const SpecResult& results) {
     boost::lock_guard<boost::mutex> lock_guard(io_mutex);
-    int fails = calculateFailures(results);
-    int pass = calculatePasses(results);
-    failOccured = fails != 0;
-	(*output) << "<testsuite failures=\"" << fails << "\" name=\"" << results.getSpecificationName() << "\" tests=\"" 
+    int fails = countCases(results, false);
+    int pass = countCases(results, true);
+    failOccured = (fails != 0) || failOccured;
+    OutputStream* output = createOutputStream(results.getSpecificationName());
+    (*output) << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << "\n";    
+    (*output) << "<testsuite failures=\"" << fails << "\" name=\"" << results.getSpecificationName() << "\" tests=\"" 
         << pass + fails << "\" time=\"" << results.getDuration() << "\" timestamp=\"" << currentTime() << "\">" << "\n";
 	
     for (BOOST_AUTO(it, results.firstBehavior()); it != results.lastBehavior(); ++it) {
@@ -84,20 +72,26 @@ void JUnitReporter::addSpecification(const SpecResult& results) {
     }
     
     (*output) << "</testsuite>" << "\n";
+    delete output;
 }
 
 bool JUnitReporter::anyBehaviorFailed() const {
     return failOccured;
 }
     
-OutputStream* JUnitReporter::createOutputStream() {
-	/*if(createLogFiles) {
+OutputStream* JUnitReporter::createOutputStream(const std::string& specificationName) {
+	if(createLogFiles) {
 		return new FileOutputStream(reportDirectory, specificationName);
-	}*/
+	}
 
 	return new ConsoleOutputStream;
 }
 
+int JUnitReporter::countCases(const CppSpec::SpecResult& results, bool passed) {
+    return std::count_if(results.firstBehavior(), results.lastBehavior(), passed ? hasPassed : hasFailed);
+}
+
+    
 std::string JUnitReporter::currentTime() {
     using namespace boost::posix_time;
     return to_simple_string(second_clock::local_time());

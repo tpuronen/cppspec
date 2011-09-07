@@ -15,6 +15,8 @@
  */
 
 #include "DummyReporter.h"
+#include "SpecResult.h"
+#include <boost/typeof/typeof.hpp>
 
 DummyReporter::DummyReporter() : success(0), failed(0) {
 }
@@ -41,7 +43,9 @@ void DummyReporter::specificationEnded(const std::string& specName) {
 }*/
 
 void DummyReporter::addSpecification(const CppSpec::SpecResult& results) {
-    
+    for (BOOST_AUTO(it, results.firstBehavior()); it != results.lastBehavior(); ++it) {
+        it->passed ? ++success : ++failed;
+    }
 }
 
 bool DummyReporter::anyBehaviorFailed() const {

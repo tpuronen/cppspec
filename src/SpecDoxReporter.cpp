@@ -22,7 +22,7 @@
 
 namespace CppSpec {
     
-SpecDoxReporter::SpecDoxReporter(OutputStream& outputStream) : outputStream(outputStream) {
+SpecDoxReporter::SpecDoxReporter(OutputStream& outputStream) : outputStream(outputStream), anyFailed(false) {
 }
 
 SpecDoxReporter::~SpecDoxReporter() {
@@ -43,7 +43,7 @@ void SpecDoxReporter::addSpecification(const SpecResult &results) {
             ++fail;
         }
     }
-    anyFailed = fail != 0;
+    anyFailed = anyFailed || (fail != 0);
     outputStream << results.getSpecificationName() << " executed, " << pass << " of " << pass + fail << " behaviors passed and " << fail << " failed." << "\n" << "\n";
 }
 

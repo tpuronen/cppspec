@@ -22,6 +22,7 @@
 #include "JUnitReporter.h"
 #include "Runnable.h"
 #include "TimerStub.h"
+#include "SpecResult.h"
 #include "Needle/Binder.h"
 
 using CppSpec::SpecRunner;
@@ -30,6 +31,7 @@ using CppSpec::SpecDoxReporter;
 using CppSpec::JUnitReporter;
 using CppSpec::Runnable;
 using CppSpec::Reporter;
+using CppSpec::SpecResult;
 
 namespace CppSpec {
     class SpecRunnerTestAccessor {
@@ -46,10 +48,17 @@ namespace CppSpec {
 }
 using CppSpec::SpecRunnerTestAccessor;
 
+class SpecRunnerStub : public CppSpec::SpecRunner {
+public:
+    SpecRunnerStub(int argc, const char* argv[]) : CppSpec::SpecRunner(argc, argv) {}
+protected:
+    CppSpec::OutputStream* createOutputStream() {return new OutputStreamStub();} 
+};
+
 SpecRunner* createSpecRunner() {
     const char* args[] = {"test"};
 	SpecificationRegistry::instance().clear();
-    return new SpecRunner(1, args);
+    return new SpecRunnerStub(1, args);
 }
 
 class SpecRunnerTest : public ::testing::Test {
@@ -88,23 +97,23 @@ TEST_F(SpecRunnerTest, ReturnZeroIfNoTestsExecuted) {
 	delete specRunner;
 }
 
-/*struct DummyRunnable : public Runnable {
+struct DummyRunnable : public Runnable {
 	DummyRunnable() : name("dummy") {}
 	void operator()() {
-		reporter->specificationStarted(*this);
-		reporter->behaviorStarted("failing dummy");
-		reporter->behaviorFailed(__FILE__, __LINE__, "dummy fail");
-		reporter->specificationEnded(name);
+        Needle::Inject<Reporter> reporter;
+        SpecResult result("dummy");
+        result.addFail("fail", "00.01000", "dummy failed");
+        reporter->addSpecification(result);
 	}
 	const std::string& getName() const {return name;}
-	unsigned int getBehaviorCount() const {return 0;}
+	unsigned int getBehaviorCount() const {return 1;}
 	const std::string name;
 };
 
-TEST(SpecRunnerTest, ReturnOneIfATestFails) {
+TEST_F(SpecRunnerTest, ReturnOneIfATestFails) {
 	SpecRunner* specRunner = createSpecRunner();
 	DummyRunnable runnable;
 	SpecificationRegistry::instance().addSpecification(&runnable);
 	EXPECT_EQ(1, specRunner->runSpecifications());
 	delete specRunner;
-}*/
+}

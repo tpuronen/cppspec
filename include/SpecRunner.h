@@ -25,8 +25,10 @@ public:
     int runSpecifications();
     friend class SpecRunnerTestAccessor;
 
+protected:
+    virtual OutputStream* createOutputStream();
+    
 private:
-    OutputStream* createOutputStream();
     Reporter* createReporter(OutputStream& outputStream);
     void runSpecs(const std::vector<std::string>& specifications);
 

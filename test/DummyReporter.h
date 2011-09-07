@@ -31,7 +31,6 @@ public: // from Reporter
 public:
 	int success;
 	int failed;
-	std::string lastFailureDescription;
 };
 
 #endif /*DUMMYREPORTER_H_*/
