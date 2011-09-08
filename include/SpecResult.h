@@ -17,6 +17,7 @@
 #ifndef __SPEC_RESULT__
 #define __SPEC_RESULT__
 
+#include "CppSpecConfig.h"
 #include <string>
 #include <vector>
 

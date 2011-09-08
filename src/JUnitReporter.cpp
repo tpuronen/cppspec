@@ -22,6 +22,7 @@
 #include <iostream>
 #include <algorithm>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/typeof/typeof.hpp>
 
 // Local helpers
 bool hasFailed(const CppSpec::SpecResult::BehaviorResult& result) {
