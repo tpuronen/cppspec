@@ -66,7 +66,14 @@ install(FILES 	../include/CppSpec.h
 				../include/SpecifyFailedException.h
 				../include/Invocation.h
 				../include/InvocationResult.h
+                ../include/SpecResult.h
+                ../include/Timer.h
 		DESTINATION include/CppSpec)
+
+install(FILES   ../include/Needle/Binder.h
+                ../include/Needle/Inject.h
+                ../include/Needle/NeedleTypeNameResolver.h
+        DESTINATION include/CppSpec/Needle)
 
 set(CPACK_PACKAGE_NAME "cppspec")
 set(CPACK_PACKAGE_VERSION_MAJOR 0)
