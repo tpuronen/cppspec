@@ -19,7 +19,6 @@
 
 #include "Reporter.h"
 #include <iostream>
-#include <boost/thread/mutex.hpp>
 
 namespace CppSpec {
 
@@ -43,7 +42,6 @@ private:
 private:
     OutputStream& outputStream;
     bool anyFailed;
-    boost::mutex io_mutex;
 };
 
 }

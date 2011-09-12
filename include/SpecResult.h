@@ -26,6 +26,8 @@ namespace CppSpec {
 class SpecResult {
 public:
     struct BehaviorResult {
+        BehaviorResult() {}
+        BehaviorResult(const BehaviorResult& that);
         std::string name;
         std::string duration;
         bool passed;
@@ -36,6 +38,9 @@ public:
 
 public:
     SpecResult(const std::string& name);
+    SpecResult(const SpecResult& that);
+    SpecResult& operator=(const SpecResult& that);
+    
     void addPass(const std::string& name, const std::string& duration);
     void addFail(const std::string& name, const std::string& duration, const std::string& message);
     void addFail(const std::string& name, const std::string& duration, const std::string& file, int line, const std::string& message);
@@ -49,7 +54,7 @@ public:
     std::vector<BehaviorResult>::const_iterator lastBehavior() const {return behaviorResults.end();}
     
 private:    
-    const std::string specificationName;
+    std::string specificationName;
     std::string duration;
     std::vector<BehaviorResult> behaviorResults;
 };

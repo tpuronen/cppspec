@@ -23,7 +23,10 @@
 #include "Runnable.h"
 #include "TimerStub.h"
 #include "SpecResult.h"
+#include "DummyReporter.h"
+#include "ThreadPool.h"
 #include "Needle/Binder.h"
+#include <boost/thread.hpp>
 
 using CppSpec::SpecRunner;
 using CppSpec::SpecificationRegistry;
@@ -32,6 +35,7 @@ using CppSpec::JUnitReporter;
 using CppSpec::Runnable;
 using CppSpec::Reporter;
 using CppSpec::SpecResult;
+using CppSpec::ThreadPool;
 
 namespace CppSpec {
     class SpecRunnerTestAccessor {
@@ -99,21 +103,33 @@ TEST_F(SpecRunnerTest, ReturnZeroIfNoTestsExecuted) {
 
 struct DummyRunnable : public Runnable {
 	DummyRunnable() : name("dummy") {}
-	void operator()() {
-        Needle::Inject<Reporter> reporter;
+    DummyRunnable(int id) : name("" + id) {}
+    SpecResult operator()() {
         SpecResult result("dummy");
         result.addFail("fail", "00.01000", "dummy failed");
-        reporter->addSpecification(result);
+        return result;
 	}
 	const std::string& getName() const {return name;}
 	unsigned int getBehaviorCount() const {return 1;}
 	const std::string name;
 };
 
-TEST_F(SpecRunnerTest, ReturnOneIfATestFails) {
+/*TEST_F(SpecRunnerTest, ReturnOneIfATestFails) {
 	SpecRunner* specRunner = createSpecRunner();
 	DummyRunnable runnable;
 	SpecificationRegistry::instance().addSpecification(&runnable);
 	EXPECT_EQ(1, specRunner->runSpecifications());
 	delete specRunner;
+}*/
+
+TEST_F(SpecRunnerTest, RunTestsInPool) {
+    DummyReporter reporter;
+    std::vector<Runnable*> specs;
+    for (int i=0; i < 10; i++) {
+        specs.push_back(new DummyRunnable(i));
+    }
+    ThreadPool pool;
+    pool.start(specs, reporter);
+    EXPECT_EQ(0, reporter.success);
+    EXPECT_EQ(10, reporter.failed);
 }

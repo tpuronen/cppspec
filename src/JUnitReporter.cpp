@@ -47,7 +47,6 @@ JUnitReporter::~JUnitReporter() {
 }
     
 void JUnitReporter::addSpecification(const SpecResult& results) {
-    boost::lock_guard<boost::mutex> lock_guard(io_mutex);
     int fails = countCases(results, false);
     int pass = countCases(results, true);
     failOccured = (fails != 0) || failOccured;

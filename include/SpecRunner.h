@@ -30,7 +30,7 @@ protected:
     
 private:
     Reporter* createReporter(OutputStream& outputStream);
-    void runSpecs(const std::vector<std::string>& specifications);
+    bool runSpecs(const std::vector<std::string>& specifications);
 
 private:
     boost::program_options::variables_map* arguments;

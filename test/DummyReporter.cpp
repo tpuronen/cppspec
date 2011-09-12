@@ -24,24 +24,6 @@ DummyReporter::DummyReporter() : success(0), failed(0) {
 DummyReporter::~DummyReporter() {
 }
 
-/*void DummyReporter::specificationStarted(const CppSpec::Runnable& specName) {
-}
-
-void DummyReporter::behaviorStarted(const std::string& behavior) {
-}
-
-void DummyReporter::behaviorSucceeded() {
-	++success;
-}
-
-void DummyReporter::behaviorFailed(const std::string&, int, const std::string& description) {
-	++failed;
-	lastFailureDescription = description;
-}
-
-void DummyReporter::specificationEnded(const std::string& specName) {
-}*/
-
 void DummyReporter::addSpecification(const CppSpec::SpecResult& results) {
     for (BOOST_AUTO(it, results.firstBehavior()); it != results.lastBehavior(); ++it) {
         it->passed ? ++success : ++failed;

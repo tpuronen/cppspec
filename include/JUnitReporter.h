@@ -22,7 +22,6 @@
 #include "Needle/Inject.h"
 #include <vector>
 #include <string>
-#include <boost/thread/mutex.hpp>
 
 namespace CppSpec {
 
@@ -66,7 +65,6 @@ private:
 	bool createLogFiles;
 	std::string reportDirectory;
 	bool failOccured;
-    boost::mutex io_mutex;
 };
 
 }

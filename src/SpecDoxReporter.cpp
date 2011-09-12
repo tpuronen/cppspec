@@ -29,7 +29,6 @@ SpecDoxReporter::~SpecDoxReporter() {
 }
 
 void SpecDoxReporter::addSpecification(const SpecResult &results) {
-    boost::lock_guard<boost::mutex> lock_guard(io_mutex);
     int pass(0);
     int fail(0);
     outputStream << results.getSpecificationName() << ":" << "\n";

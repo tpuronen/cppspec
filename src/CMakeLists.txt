@@ -19,9 +19,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
 set(CPPSPEC_SRCS SpecDoxReporter.cpp SpecificationRegistry.cpp SpecRunner.cpp Util.cpp SpecResult.cpp
 	Matcher.cpp JUnitReporter.cpp BoostTimer.cpp FileOutputStream.cpp ConsoleOutputStream.cpp)
 
+set(CPPSPEC_INCLUDES ../include/BeType.h ../include/Invocation.h ../include/SpecDoxReporter.h 
+    ../include/Behavior.h ../include/InvocationResult.h ../include/SpecResult.h ../include/BoostTimer.h 
+    ../include/InvokingType.h ../include/SpecRunner.h ../include/ConsoleOutputStream.h ../include/JUnitReporter.h 
+    ../include/Specification.h ../include/ContextHolder.h ../include/Matcher.h ../include/SpecificationBase.h 
+    ../include/CppSpec.h ../include/SpecificationRegistry.h ../include/CppSpecConfig.h
+    ../include/OutputStream.h ../include/SpecifyFailedException.h ../include/Expectation.h ../include/Reporter.h 
+    ../include/Timer.h ../include/FileOutputStream.h ../include/Runnable.h ../include/TypeHasStreamingOperator.h 
+    ../include/Functor.h ../include/ShouldType.h ../include/TypeNameResolver.h)
+
 include_directories("${CMAKE_HOME_DIRECTORY}/include" ${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
-add_library(CppSpec SHARED ${CPPSPEC_SRCS})
+add_library(CppSpec SHARED ${CPPSPEC_SRCS} ${CPPSPEC_INCLUDES})
 target_link_libraries(CppSpec ${Boost_LIBRARIES})
 
 if(MSVC_IDE)

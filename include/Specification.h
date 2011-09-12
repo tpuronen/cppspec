@@ -103,10 +103,9 @@ public: // Expectations, these are used through specify-macro
 	}
 
 public: // from Runnable
-	void operator()() {
+	SpecResult operator()() {
         SpecResult results(SpecificationBase<Derived>::getName());
 		const int count(SpecificationBase<Derived>::behaviors.size());
-        Needle::Inject<Reporter> reporter;
         Needle::Inject<Timer> timer("spec");
         timer->start();
 		for(int i = 0; i < count; ++i) {
@@ -116,7 +115,7 @@ public: // from Runnable
 			static_cast<Derived*>(this)->destroyContext();
 		}
         results.setDuration(timer->stop());
-        reporter->addSpecification(results);
+        return results;
 	}
 
 public: // Vocabulary
@@ -144,16 +143,14 @@ public:
     }
 
 public: // from Runnable
-    void operator()() {
+    SpecResult operator()() {
         SpecResult results(SpecificationBase<Derived>::getName());
 		const int count(SpecificationBase<Derived>::behaviors.size());
         for(int i = 0; i < count; ++i) {
             Functor& behavior = *(SpecificationBase<Derived>::behaviors[i]);
             SpecificationBase<Derived>::executeBehavior(behavior, results);
         }
-        Needle::Inject<Reporter> reporter;
-        reporter->addSpecification(results);
-        //reporter->specificationEnded(SpecificationBase<Derived>::getName());
+        return results;
     }
 
 public:

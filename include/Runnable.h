@@ -18,6 +18,7 @@
 #define RUNNABLE_H_
 
 #include "Reporter.h"
+#include "SpecResult.h"
 #include <string>
 
 namespace CppSpec {
@@ -34,7 +35,7 @@ public:
 	/**
 	 * Execute behaviors of a specification
 	 */
-	virtual void operator()() = 0;
+	virtual SpecResult operator()() = 0;
 
 	/**
 	 * Get the name of the specification.

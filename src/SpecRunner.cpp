@@ -22,6 +22,7 @@
 #include "BoostTimer.h"
 #include "ConsoleOutputStream.h"
 #include "Needle/Binder.h"
+#include "ThreadPool.h"
 #include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
@@ -65,16 +66,10 @@ SpecRunner::~SpecRunner() {
 }
 
 int SpecRunner::runSpecifications() {
-    OutputStream* outputStream = createOutputStream();
-    Needle::Binder::instance().bind<Reporter>(createReporter(*outputStream));
     Needle::Binder::instance().bind<Timer>(new BoostTimer(), "spec");
     Needle::Binder::instance().bind<Timer>(new BoostTimer(), "behavior");
     
-    runSpecs(specificationsToRun);
-    
-    delete outputStream;
-    Needle::Inject<Reporter> reporter;
-    return reporter->anyBehaviorFailed();
+    return runSpecs(specificationsToRun);
 }
 
 OutputStream* SpecRunner::createOutputStream() {
@@ -99,19 +94,17 @@ Reporter* SpecRunner::createReporter(OutputStream& outputStream) {
     return new SpecDoxReporter(outputStream);
 }
 
-void SpecRunner::runSpecs(const std::vector<std::string>& specificationsToRun) {
-    ShouldBeRun shouldBeRun(specificationsToRun);
-    std::vector<boost::thread*> threads;
-    BOOST_FOREACH(Runnable* specification, SpecificationRegistry::instance().getSpecifications()) {
-        if(shouldBeRun(specification->getName())) {
-            boost::thread* t = new boost::thread(boost::ref(*specification));
-            threads.push_back(t);
-        }
-    }
-    BOOST_FOREACH(boost::thread* t, threads) {
-        t->join();
-        delete t;
-    }
+bool SpecRunner::runSpecs(const std::vector<std::string>& specificationsToRun) {
+    //ShouldBeRun shouldBeRun(specificationsToRun);
+    OutputStream* output = createOutputStream();
+    Reporter* reporter = createReporter(*output);
+    ThreadPool pool;
+    pool.start(SpecificationRegistry::instance().getSpecifications(), *reporter);
+    
+    bool failures = reporter->anyBehaviorFailed();
+    delete reporter;
+    delete output;
+    return failures;
 }
 
 }

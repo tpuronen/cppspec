@@ -18,7 +18,25 @@
 
 namespace CppSpec {
 
+SpecResult::BehaviorResult::BehaviorResult(const SpecResult::BehaviorResult& that)
+    : name(that.name), duration(that.duration), passed(that.passed), file(that.file), message(that.message), line(that.line)
+{
+}
+    
 SpecResult::SpecResult(const std::string& name) : specificationName(name) {
+}
+    
+SpecResult::SpecResult(const SpecResult& that) : specificationName(that.specificationName), duration(that.duration) {
+    behaviorResults.resize(that.behaviorResults.size());
+    std::copy(that.firstBehavior(), that.lastBehavior(), behaviorResults.begin());
+}
+ 
+SpecResult& SpecResult::operator=(const SpecResult& that) {
+    specificationName = that.specificationName;
+    duration = that.duration;
+    behaviorResults.resize(that.behaviorResults.size());
+    std::copy(that.firstBehavior(), that.lastBehavior(), behaviorResults.begin());
+    return *this;
 }
     
 void SpecResult::addPass(const std::string& name, const std::string& duration) {
