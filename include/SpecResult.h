@@ -52,6 +52,8 @@ public:
 
     std::vector<BehaviorResult>::const_iterator firstBehavior() const {return behaviorResults.begin();}
     std::vector<BehaviorResult>::const_iterator lastBehavior() const {return behaviorResults.end();}
+    size_t passCount() const;
+    size_t failCount() const;
     
 private:    
     std::string specificationName;

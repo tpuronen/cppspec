@@ -6,8 +6,6 @@
 
 namespace CppSpec {
 
-
-
 class ThreadPool {
 private:
     class Consumer {
@@ -70,6 +68,10 @@ private:
     
 public:
     void start(const std::vector<Runnable*> specs, Reporter& reporter) {
+        if (specs.size() == 0) {
+            return;
+        }
+        
         Consumer consumer(specs);
         int coreCount(boost::thread::hardware_concurrency());
         for (int i = 0; i < std::max(1, coreCount); ++i) {

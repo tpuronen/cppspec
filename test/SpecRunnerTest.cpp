@@ -114,13 +114,13 @@ struct DummyRunnable : public Runnable {
 	const std::string name;
 };
 
-/*TEST_F(SpecRunnerTest, ReturnOneIfATestFails) {
+TEST_F(SpecRunnerTest, ReturnOneIfATestFails) {
 	SpecRunner* specRunner = createSpecRunner();
 	DummyRunnable runnable;
 	SpecificationRegistry::instance().addSpecification(&runnable);
 	EXPECT_EQ(1, specRunner->runSpecifications());
 	delete specRunner;
-}*/
+}
 
 TEST_F(SpecRunnerTest, RunTestsInPool) {
     DummyReporter reporter;

@@ -15,6 +15,8 @@
  */
 
 #include "SpecResult.h"
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/bind.hpp>
 
 namespace CppSpec {
 
@@ -61,6 +63,16 @@ void SpecResult::addFail(const std::string& name, const std::string& duration,
     result.line = line;
     result.message = message;
     behaviorResults.push_back(result);
+}
+
+size_t SpecResult::passCount() const {
+    return std::count_if(behaviorResults.begin(), behaviorResults.end(), 
+                         boost::lambda::bind(&BehaviorResult::passed, boost::lambda::_1) == true);
+}
+
+size_t SpecResult::failCount() const {
+    return std::count_if(behaviorResults.begin(), behaviorResults.end(),
+                         boost::lambda::bind(&BehaviorResult::passed, boost::lambda::_1) == false);
 }
 
 }

@@ -18,7 +18,6 @@
 #include "CppSpec.h"
 #include "DummyReporter.h"
 #include "TimerStub.h"
-#include "Needle/Binder.h"
 
 using CppSpec::Specification;
 
@@ -101,10 +100,12 @@ TEST_F(SpecWithBehavioursTest, CanCallContextForVoid) {
     spec->context();
 }
 
+bool hasBehaviorPassed(const CppSpec::SpecResult::BehaviorResult& r) {
+    return r.passed;
+}
+
 TEST_F(SpecWithBehavioursTest, BehaviorsAreExecuted) {
-    (*spec)();
-    Needle::Inject<CppSpec::Reporter> reporter;
-    const DummyReporter& dreporter = dynamic_cast<const DummyReporter&>(*reporter);
-    EXPECT_EQ(3, dreporter.success);
-    EXPECT_EQ(4, dreporter.failed);
+    CppSpec::SpecResult result = (*spec)();
+    EXPECT_EQ((size_t)3, result.passCount());
+    EXPECT_EQ((size_t)4, result.failCount());
 }

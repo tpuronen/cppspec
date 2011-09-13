@@ -55,7 +55,6 @@ public:
 private:
 	OutputStream* createOutputStream(const std::string& reportDirectory);
 	std::string currentTime();
-    int countCases(const CppSpec::SpecResult& results, bool passed);
 
 private:
 	JUnitReporter(const JUnitReporter& rhs);

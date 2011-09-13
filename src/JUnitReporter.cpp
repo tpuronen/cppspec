@@ -24,15 +24,6 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/typeof/typeof.hpp>
 
-// Local helpers
-bool hasFailed(const CppSpec::SpecResult::BehaviorResult& result) {
-    return !result.passed;
-}
-
-bool hasPassed(const CppSpec::SpecResult::BehaviorResult& result) {
-    return result.passed;
-}
-
 namespace CppSpec {
 
 JUnitReporter::JUnitReporter()
@@ -47,8 +38,8 @@ JUnitReporter::~JUnitReporter() {
 }
     
 void JUnitReporter::addSpecification(const SpecResult& results) {
-    int fails = countCases(results, false);
-    int pass = countCases(results, true);
+    const int fails(results.failCount());
+    const int pass(results.passCount());
     failOccured = (fails != 0) || failOccured;
     OutputStream* output = createOutputStream(results.getSpecificationName());
     (*output) << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << "\n";    
@@ -87,11 +78,6 @@ OutputStream* JUnitReporter::createOutputStream(const std::string& specification
 	return new ConsoleOutputStream;
 }
 
-int JUnitReporter::countCases(const CppSpec::SpecResult& results, bool passed) {
-    return std::count_if(results.firstBehavior(), results.lastBehavior(), passed ? hasPassed : hasFailed);
-}
-
-    
 std::string JUnitReporter::currentTime() {
     using namespace boost::posix_time;
     return to_simple_string(second_clock::local_time());
