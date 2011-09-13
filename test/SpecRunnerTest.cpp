@@ -102,16 +102,21 @@ TEST_F(SpecRunnerTest, ReturnZeroIfNoTestsExecuted) {
 }
 
 struct DummyRunnable : public Runnable {
-	DummyRunnable() : name("dummy") {}
-    DummyRunnable(int id) : name("" + id) {}
+	DummyRunnable() : name("dummy"), pass(false) {}
+    DummyRunnable(const std::string& id, bool pass) : name(id), pass(pass) {}
     SpecResult operator()() {
         SpecResult result("dummy");
-        result.addFail("fail", "00.01000", "dummy failed");
+        if (pass) {
+            result.addPass("pass", "00.01000");
+        } else {
+            result.addFail("fail", "00.01000", "dummy failed");            
+        }
         return result;
 	}
 	const std::string& getName() const {return name;}
 	unsigned int getBehaviorCount() const {return 1;}
 	const std::string name;
+    bool pass;
 };
 
 TEST_F(SpecRunnerTest, ReturnOneIfATestFails) {
@@ -126,10 +131,22 @@ TEST_F(SpecRunnerTest, RunTestsInPool) {
     DummyReporter reporter;
     std::vector<Runnable*> specs;
     for (int i=0; i < 10; i++) {
-        specs.push_back(new DummyRunnable(i));
+        specs.push_back(new DummyRunnable("" + i, false));
     }
     ThreadPool pool;
-    pool.start(specs, reporter);
+    pool.start(specs.begin(), specs.end(), reporter);
     EXPECT_EQ(0, reporter.success);
     EXPECT_EQ(10, reporter.failed);
+}
+
+TEST_F(SpecRunnerTest, RunSelectedTest) {
+	SpecificationRegistry::instance().clear();
+    const char* args[] = {"test", "-s", "runme"};
+    SpecRunner* specRunner = new SpecRunnerStub(3, args);
+
+    DummyRunnable dontRun;
+    DummyRunnable runThis("runme", true);
+    SpecificationRegistry::instance().addSpecification(&dontRun);
+    SpecificationRegistry::instance().addSpecification(&runThis);
+    EXPECT_EQ(0, specRunner->runSpecifications());
 }

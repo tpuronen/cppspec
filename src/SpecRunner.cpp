@@ -24,26 +24,21 @@
 #include "Needle/Binder.h"
 #include "ThreadPool.h"
 #include <boost/program_options.hpp>
-#include <boost/foreach.hpp>
-#include <boost/thread.hpp>
 
 namespace CppSpec {
 
-class ShouldBeRun {
+class RemoveIfNotToBeRun {
 public:
-    explicit ShouldBeRun(const std::vector<std::string>& specificationsToRun) :
-        specificationsToRun(specificationsToRun) {
+    RemoveIfNotToBeRun(const std::vector<std::string>& specificationsToRun) : specificationsToRun(specificationsToRun) {}
+    
+    bool operator()(Runnable* runnable) {
+        return std::find(specificationsToRun.begin(), specificationsToRun.end(), runnable->getName()) == specificationsToRun.end();
     }
-
-    bool operator()(const std::string& name) {
-        return specificationsToRun.empty() ||
-            std::find(specificationsToRun.begin(), specificationsToRun.end(), name) != specificationsToRun.end();
-    }
-
+    
 private:
-    const std::vector<std::string>& specificationsToRun;
+    const std::vector<std::string>& specificationsToRun;    
 };
-
+    
 SpecRunner::SpecRunner(int argc, const char* argv[]) {
     boost::program_options::options_description options("Options");
     options.add_options()
@@ -95,11 +90,16 @@ Reporter* SpecRunner::createReporter(OutputStream& outputStream) {
 }
 
 bool SpecRunner::runSpecs(const std::vector<std::string>& specificationsToRun) {
-    //ShouldBeRun shouldBeRun(specificationsToRun);
     OutputStream* output = createOutputStream();
     Reporter* reporter = createReporter(*output);
+    std::vector<Runnable*> specs = SpecificationRegistry::instance().getSpecifications();
+    std::vector<Runnable*>::iterator last = specs.end();
+    if (!specificationsToRun.empty()) {
+        RemoveIfNotToBeRun removeIfNotToBeRun(specificationsToRun);
+        last = std::remove_if(specs.begin(), specs.end(), removeIfNotToBeRun);
+    }
     ThreadPool pool;
-    pool.start(SpecificationRegistry::instance().getSpecifications(), *reporter);
+    pool.start(specs.begin(), last, *reporter);
     
     bool failures = reporter->anyBehaviorFailed();
     delete reporter;

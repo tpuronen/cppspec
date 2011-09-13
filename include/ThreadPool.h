@@ -10,7 +10,8 @@ class ThreadPool {
 private:
     class Consumer {
     public:
-        Consumer(const std::vector<Runnable*>& specs) : specs(specs), threads(0) {}
+        template<typename Iterator>
+        Consumer(Iterator begin, Iterator end) : specs(begin, end), threads(0) {}
         
         Runnable* getSpec() {
             boost::lock_guard<boost::mutex> lock(specsLock);
@@ -67,12 +68,14 @@ private:
     };
     
 public:
-    void start(const std::vector<Runnable*> specs, Reporter& reporter) {
-        if (specs.size() == 0) {
+    template<typename InputIterator>
+    //void start(const std::vector<Runnable*> specs, Reporter& reporter) {
+    void start(InputIterator begin, InputIterator end, Reporter& reporter) {
+        if (std::distance(begin, end) == 0) {
             return;
         }
         
-        Consumer consumer(specs);
+        Consumer consumer(begin, end);
         int coreCount(boost::thread::hardware_concurrency());
         for (int i = 0; i < std::max(1, coreCount); ++i) {
             threads.push_back(new boost::thread(boost::ref(consumer)));
