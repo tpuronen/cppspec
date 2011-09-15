@@ -19,7 +19,7 @@
 #include <sstream>
 
 namespace CppSpec {
-
+    
 BoostTimer::BoostTimer() {}
 
 BoostTimer::~BoostTimer() {

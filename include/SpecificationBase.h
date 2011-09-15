@@ -28,7 +28,6 @@
 #include "InvokingType.h"
 #include "SpecResult.h"
 #include "Timer.h"
-#include "Needle/Inject.h"
 #include <vector>
 #include <sstream>
 
@@ -92,7 +91,7 @@ public: // from Runnable
 
 protected:
     void executeBehavior(Functor& behavior, SpecResult& results) {
-        Needle::Inject<Timer> timer("behavior");
+        boost::shared_ptr<Timer> timer = Timer::create();
         try {
             timer->start();
             behavior();

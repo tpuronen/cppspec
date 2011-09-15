@@ -69,7 +69,6 @@ private:
     
 public:
     template<typename InputIterator>
-    //void start(const std::vector<Runnable*> specs, Reporter& reporter) {
     void start(InputIterator begin, InputIterator end, Reporter& reporter) {
         if (std::distance(begin, end) == 0) {
             return;

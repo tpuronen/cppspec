@@ -21,7 +21,6 @@
 #include "JUnitReporter.h"
 #include "BoostTimer.h"
 #include "ConsoleOutputStream.h"
-#include "Needle/Binder.h"
 #include "ThreadPool.h"
 #include <boost/program_options.hpp>
 
@@ -61,9 +60,6 @@ SpecRunner::~SpecRunner() {
 }
 
 int SpecRunner::runSpecifications() {
-    Needle::Binder::instance().bind<Timer>(new BoostTimer(), "spec");
-    Needle::Binder::instance().bind<Timer>(new BoostTimer(), "behavior");
-    
     return runSpecs(specificationsToRun);
 }
 

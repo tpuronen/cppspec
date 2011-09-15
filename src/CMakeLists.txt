@@ -17,7 +17,7 @@
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
 set(CPPSPEC_SRCS SpecDoxReporter.cpp SpecificationRegistry.cpp SpecRunner.cpp Util.cpp SpecResult.cpp
-	Matcher.cpp JUnitReporter.cpp BoostTimer.cpp FileOutputStream.cpp ConsoleOutputStream.cpp)
+	Timer.cpp Matcher.cpp JUnitReporter.cpp BoostTimer.cpp FileOutputStream.cpp ConsoleOutputStream.cpp)
 
 set(CPPSPEC_INCLUDES ../include/BeType.h ../include/Invocation.h ../include/SpecDoxReporter.h 
     ../include/Behavior.h ../include/InvocationResult.h ../include/SpecResult.h ../include/BoostTimer.h 

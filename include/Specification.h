@@ -22,9 +22,8 @@
 #include "ShouldType.h"
 #include "ContextHolder.h"
 #include "SpecResult.h"
-#include "Needle/Inject.h"
+#include "BoostTimer.h"
 #include <boost/bind.hpp>
-
 
 /**
  * MSVC++ does not support not keyword.
@@ -106,7 +105,7 @@ public: // from Runnable
 	SpecResult operator()() {
         SpecResult results(SpecificationBase<Derived>::getName());
 		const int count(SpecificationBase<Derived>::behaviors.size());
-        Needle::Inject<Timer> timer("spec");
+        boost::shared_ptr<Timer> timer = Timer::create();
         timer->start();
 		for(int i = 0; i < count; ++i) {
 			contextPtr = static_cast<Derived*>(this)->createContext();

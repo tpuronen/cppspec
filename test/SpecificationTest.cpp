@@ -78,15 +78,12 @@ TEST(EmptySpecificationTest, HasCountOfZero) {
 class SpecWithBehavioursTest : public ::testing::Test {
 protected:
     void SetUp() {
-        Needle::Binder::instance().bind<CppSpec::Reporter>(new DummyReporter());
-        Needle::Binder::instance().bind<CppSpec::Timer>(new TimerStub(), "behavior");
         spec = new SpecWithBehaviours();
     }
     
     void TearDown() {
         delete spec;
         spec = NULL;
-        Needle::Binder::instance().deleteBindings();
     }
     
     SpecWithBehaviours* spec;

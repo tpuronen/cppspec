@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-#ifndef TIMERSTUB_H_
-#define TIMERSTUB_H_
+#pragma once
 
 #include "Timer.h"
 
@@ -23,5 +22,3 @@ class TimerStub : public CppSpec::Timer {
     void start() {}
     std::string stop() {return "00.010000";}
 };
-
-#endif /* TIMERSTUB_H_ */

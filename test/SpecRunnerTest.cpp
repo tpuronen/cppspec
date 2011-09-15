@@ -25,8 +25,7 @@
 #include "SpecResult.h"
 #include "DummyReporter.h"
 #include "ThreadPool.h"
-#include "Needle/Binder.h"
-#include <boost/thread.hpp>
+#include <boost/functional/factory.hpp>
 
 using CppSpec::SpecRunner;
 using CppSpec::SpecificationRegistry;
@@ -65,37 +64,25 @@ SpecRunner* createSpecRunner() {
     return new SpecRunnerStub(1, args);
 }
 
-class SpecRunnerTest : public ::testing::Test {
-public:
-    void SetUp() {
-        Needle::Binder::instance().bind<CppSpec::Timer>(new TimerStub(), "behavior");
-        Needle::Binder::instance().bind<CppSpec::Timer>(new TimerStub(), "spec");
-    }
-    
-    void TearDown() {
-        Needle::Binder::instance().deleteBindings();
-    }
-};
-
-TEST_F(SpecRunnerTest, SpecDoxReporterIsReturnedByDefault) {
+TEST(SpecRunnerTest, SpecDoxReporterIsReturnedByDefault) {
 	SpecRunner* specRunner = createSpecRunner();
     SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<SpecDoxReporter>(*specRunner);
 	delete specRunner;
 }
 
-TEST_F(SpecRunnerTest, CreateReporterReturnsJUnitReporterIfGivenInArguments) {
+TEST(SpecRunnerTest, CreateReporterReturnsJUnitReporterIfGivenInArguments) {
     const char* args[] = {"test", "-o", "junit", "--report-dir", "foo"};
     SpecRunner specRunner(5, args);
     SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<JUnitReporter>(specRunner);
 }
 
-TEST_F(SpecRunnerTest, CreateReporterReturnsJUnitReporterWithoutLogFilesIfGivenInArguments) {
+TEST(SpecRunnerTest, CreateReporterReturnsJUnitReporterWithoutLogFilesIfGivenInArguments) {
     const char* args[] = {"test", "-o", "junit", "--no-logs"};
     SpecRunner specRunner(4, args);
     SpecRunnerTestAccessor().checkThatGivenReporterIsCreated<JUnitReporter>(specRunner);
 }
 
-TEST_F(SpecRunnerTest, ReturnZeroIfNoTestsExecuted) {
+TEST(SpecRunnerTest, ReturnZeroIfNoTestsExecuted) {
     SpecRunner* specRunner = createSpecRunner();
 	EXPECT_EQ(0, specRunner->runSpecifications());
 	delete specRunner;
@@ -119,7 +106,7 @@ struct DummyRunnable : public Runnable {
     bool pass;
 };
 
-TEST_F(SpecRunnerTest, ReturnOneIfATestFails) {
+TEST(SpecRunnerTest, ReturnOneIfATestFails) {
 	SpecRunner* specRunner = createSpecRunner();
 	DummyRunnable runnable;
 	SpecificationRegistry::instance().addSpecification(&runnable);
@@ -127,7 +114,7 @@ TEST_F(SpecRunnerTest, ReturnOneIfATestFails) {
 	delete specRunner;
 }
 
-TEST_F(SpecRunnerTest, RunTestsInPool) {
+TEST(SpecRunnerTest, RunTestsInPool) {
     DummyReporter reporter;
     std::vector<Runnable*> specs;
     for (int i=0; i < 10; i++) {
@@ -137,9 +124,12 @@ TEST_F(SpecRunnerTest, RunTestsInPool) {
     pool.start(specs.begin(), specs.end(), reporter);
     EXPECT_EQ(0, reporter.success);
     EXPECT_EQ(10, reporter.failed);
+    for (std::vector<Runnable*>::iterator it = specs.begin(); it != specs.end(); it++) {
+        delete *it;
+    }
 }
 
-TEST_F(SpecRunnerTest, RunSelectedTest) {
+TEST(SpecRunnerTest, RunSelectedTest) {
 	SpecificationRegistry::instance().clear();
     const char* args[] = {"test", "-s", "runme"};
     SpecRunner* specRunner = new SpecRunnerStub(3, args);
@@ -149,4 +139,5 @@ TEST_F(SpecRunnerTest, RunSelectedTest) {
     SpecificationRegistry::instance().addSpecification(&dontRun);
     SpecificationRegistry::instance().addSpecification(&runThis);
     EXPECT_EQ(0, specRunner->runSpecifications());
+    delete specRunner;
 }

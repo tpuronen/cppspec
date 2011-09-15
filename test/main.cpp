@@ -15,10 +15,15 @@
  */
 
 #include <gtest/gtest.h>
-#include "Needle/Binder.h"
 #include "TimerStub.h"
 
 int main(int argc, char* argv[]) {
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
+}
+
+namespace CppSpec {    
+    boost::shared_ptr<Timer> Timer::create() {
+        return boost::shared_ptr<Timer>(new TimerStub());
+    }
 }

@@ -19,7 +19,6 @@
 
 #include "Reporter.h"
 #include "Timer.h"
-#include "Needle/Inject.h"
 #include <vector>
 #include <string>
 

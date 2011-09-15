@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Timo Puronen
+ * Copyright 2011 Timo Puronen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef INJECT_H_
-#define INJECT_H_
+#include "Timer.h"
+#include "BoostTimer.h"
 
-#include "Binder.h"
-#include <boost/shared_ptr.hpp>
+namespace CppSpec {
 
-namespace Needle {
-
-template<typename T>
-class Inject : public boost::shared_ptr<T> {
-public:
-    Inject() : boost::shared_ptr<T>(Binder::instance().get<T>()) {
-    }
-    
-    Inject(const std::string& name) : boost::shared_ptr<T>(Binder::instance().get<T>(name)) {
-    }
-};
-
+boost::shared_ptr<Timer> Timer::create() {
+    return boost::shared_ptr<Timer>(new BoostTimer());
 }
 
-#endif /* INJECT_H_ */
+}
