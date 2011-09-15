@@ -45,6 +45,7 @@ SpecRunner::SpecRunner(int argc, const char* argv[]) {
         ("no-logs", "do not create log files when using JUnitReporter. No effect on other reporters")
         ("report-dir",  boost::program_options::value<std::string>(), "directory where JUnit reports are created")
         ("specification,s", boost::program_options::value<std::vector<std::string> >(&specificationsToRun),"specification to be run, if multiple specifications will be run, the option can be repeated")
+        ("multithreaded,m", "run tests using multiple threads to shorten execution time")
         ("help,h", "show help");
     arguments = new boost::program_options::variables_map();
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, options), *arguments);
@@ -94,7 +95,11 @@ bool SpecRunner::runSpecs(const std::vector<std::string>& specificationsToRun) {
         RemoveIfNotToBeRun removeIfNotToBeRun(specificationsToRun);
         last = std::remove_if(specs.begin(), specs.end(), removeIfNotToBeRun);
     }
-    ThreadPool pool;
+    int threads(1);
+    if (arguments->count("multithreaded")) {
+        threads = std::max((unsigned int)1, boost::thread::hardware_concurrency());
+    }
+    ThreadPool pool(threads);
     pool.start(specs.begin(), last, *reporter);
     
     bool failures = reporter->anyBehaviorFailed();

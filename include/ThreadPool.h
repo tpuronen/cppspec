@@ -68,6 +68,8 @@ private:
     };
     
 public:
+    ThreadPool(int threadCount) : threadCount(threadCount) {}
+    
     template<typename InputIterator>
     void start(InputIterator begin, InputIterator end, Reporter& reporter) {
         if (std::distance(begin, end) == 0) {
@@ -75,8 +77,7 @@ public:
         }
         
         Consumer consumer(begin, end);
-        int coreCount(boost::thread::hardware_concurrency());
-        for (int i = 0; i < std::max(1, coreCount); ++i) {
+        for (int i = 0; i < threadCount; ++i) {
             threads.push_back(new boost::thread(boost::ref(consumer)));
         }
 
@@ -101,6 +102,7 @@ public:
     
 private:
     std::vector<boost::thread*> threads;
+    int threadCount;
 };
     
 }

@@ -114,19 +114,28 @@ TEST(SpecRunnerTest, ReturnOneIfATestFails) {
 	delete specRunner;
 }
 
-TEST(SpecRunnerTest, RunTestsInPool) {
+void runTestsInPool(ThreadPool& pool) {
     DummyReporter reporter;
     std::vector<Runnable*> specs;
     for (int i=0; i < 10; i++) {
         specs.push_back(new DummyRunnable("" + i, false));
     }
-    ThreadPool pool;
     pool.start(specs.begin(), specs.end(), reporter);
     EXPECT_EQ(0, reporter.success);
     EXPECT_EQ(10, reporter.failed);
     for (std::vector<Runnable*>::iterator it = specs.begin(); it != specs.end(); it++) {
         delete *it;
     }
+}
+
+TEST(SpecRunnerTest, RunTestUsingOneThread) {
+    ThreadPool pool(1);
+    runTestsInPool(pool);
+}
+
+TEST(SpecRunnerTest, RunTestsUsingThreeThreads) {
+    ThreadPool pool(3);
+    runTestsInPool(pool);
 }
 
 TEST(SpecRunnerTest, RunSelectedTest) {
