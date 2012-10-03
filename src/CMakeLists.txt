@@ -18,19 +18,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
 set(CPPSPEC_SRCS SpecDoxReporter.cpp SpecificationRegistry.cpp SpecRunner.cpp Util.cpp SpecResult.cpp
 	Timer.cpp Matcher.cpp JUnitReporter.cpp BoostTimer.cpp FileOutputStream.cpp ConsoleOutputStream.cpp)
-
-set(CPPSPEC_INCLUDES ../include/BeType.h ../include/Invocation.h ../include/SpecDoxReporter.h 
-    ../include/Behavior.h ../include/InvocationResult.h ../include/SpecResult.h ../include/BoostTimer.h 
-    ../include/InvokingType.h ../include/SpecRunner.h ../include/ConsoleOutputStream.h ../include/JUnitReporter.h 
-    ../include/Specification.h ../include/ContextHolder.h ../include/Matcher.h ../include/SpecificationBase.h 
-    ../include/CppSpec.h ../include/SpecificationRegistry.h ../include/CppSpecConfig.h
-    ../include/OutputStream.h ../include/SpecifyFailedException.h ../include/Expectation.h ../include/Reporter.h 
-    ../include/Timer.h ../include/FileOutputStream.h ../include/Runnable.h ../include/TypeHasStreamingOperator.h 
-    ../include/Functor.h ../include/ShouldType.h ../include/TypeNameResolver.h)
+file(GLOB CPPSPEC_INCLUDES ../include/*.h)
 
 include_directories("${CMAKE_HOME_DIRECTORY}/include" ${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
-add_library(CppSpec SHARED ${CPPSPEC_SRCS} ${CPPSPEC_INCLUDES})
+add_library(CppSpec SHARED ${CPPSPEC_SRCS})
 target_link_libraries(CppSpec ${Boost_LIBRARIES})
 
 if(MSVC_IDE)
@@ -54,30 +46,7 @@ install(TARGETS CppSpec
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION lib)
 
-install(FILES 	../include/CppSpec.h
-				../include/SpecificationBase.h
-				../include/Specification.h
-				../include/Expectation.h
-				../include/SpecRunner.h
-				../include/SpecificationRegistry.h
-				../include/Runnable.h
-				../include/Reporter.h
-				../include/Matcher.h
-				../include/ShouldType.h
-				../include/InvokingType.h
-				../include/BeType.h
-				../include/ContextHolder.h
-				../include/Functor.h
-				../include/Behavior.h
-				../include/TypeHasStreamingOperator.h
-				../include/TypeNameResolver.h
-				../include/CppSpecConfig.h
-				../include/SpecifyFailedException.h
-				../include/Invocation.h
-				../include/InvocationResult.h
-        ../include/SpecResult.h
-        ../include/Timer.h
-		DESTINATION include/CppSpec)
+install(FILES ${CPPSPEC_INCLUDES} DESTINATION include/CppSpec)
 
 set(CPACK_PACKAGE_NAME "cppspec")
 set(CPACK_PACKAGE_VERSION_MAJOR 0)
