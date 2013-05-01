@@ -1,6 +1,0 @@
-CppSpec
-
-CppSpec is a behavior driven development (BDD) framework for C++. BDD is a refinement of TDD which turns the focus from writing the tests to the process of defining the behavior of the software using tests. You can read more about BDD from www.behaviour-driven.org.
-
-For the instructions on how to use CppSpec, please see http://www.laughingpanda.org/projects/cppspec/
-
