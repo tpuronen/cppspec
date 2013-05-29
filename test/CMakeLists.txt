@@ -15,7 +15,7 @@
 #
 
 find_package(GTest REQUIRED)
-include_directories(../include ${GTEST_INCLUDE_DIRS} ${BOOST_INCLUDE_DIRS})
+include_directories(../include ${GTEST_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 set(CPPSPEC_SRCS ../src/SpecDoxReporter.cpp ../src/Matcher.cpp ../src/SpecificationRegistry.cpp ../src/SpecRunner.cpp ../src/BoostTimer.cpp 
     ../src/JUnitReporter.cpp ../src/FileOutputStream.cpp ../src/ConsoleOutputStream.cpp ../src/Util.cpp ../src/SpecResult.cpp)
