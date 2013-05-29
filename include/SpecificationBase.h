@@ -62,6 +62,18 @@ public:
         }
     }
 
+    /**
+     * Specify that actual and expected must almost equal (for floating point values).
+     */
+    template<class T, class U>
+    void specifyImpl(const std::string& file, int line, const T& actual, const FloatExpectation<U>& expected) {
+        if(!expected.almostEquals(actual)) {
+            std::stringstream message;
+            writeInequalMessageToStream(message, actual, expected, CheckIf<TypeHasStreamingOperator<T>::result && TypeHasStreamingOperator<U>::result>());
+            throw SpecifyFailedException(file, line, message.str());
+        }
+    }
+
     void specifyImpl(const std::string& file, int line, const std::string& text, const Matcher& matcher) {
         if(!matcher(text)) {
             std::stringstream message;
@@ -125,6 +137,21 @@ private:
 
     template<class T>
     void writeInequalMessageToStream(std::ostream& stream, const T& actual, const Expectation<T>& expected, CheckIf<false>) {
+        stream << "actual was not expected";
+    }
+
+    template<class T>
+    void writeInequalMessageToStream(std::ostream& stream, const T& actual, const FloatExpectation<T>& expected, CheckIf<true>) {
+        stream << std::boolalpha << "expected [" << expected.lower() << ", " << expected.upper() << "] but was " << actual;
+    }
+
+    template<class T, class U>
+    void writeInequalMessageToStream(std::ostream& stream, const T& actual, const FloatExpectation<U>& expected, CheckIf<true>) {
+        stream << std::boolalpha << "expected [" << expected.lower() << ", " << expected.upper() << "] but was " << actual;
+    }
+
+    template<class T>
+    void writeInequalMessageToStream(std::ostream& stream, const T& actual, const FloatExpectation<T>& expected, CheckIf<false>) {
         stream << "actual was not expected";
     }
 

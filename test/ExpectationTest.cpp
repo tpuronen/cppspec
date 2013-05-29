@@ -18,16 +18,32 @@
 #include "Expectation.h"
 
 using CppSpec::Expectation;
+using CppSpec::FloatExpectation;
 
 TEST(ExpectationTest, sameTypesEqual) {
-	std::string result("expected");
-    Expectation<std::string> expected(result);
-    EXPECT_TRUE(expected.equals(std::string("expected")));
-    EXPECT_TRUE((!expected).equals("something else"));
+  std::string result("expected");
+  Expectation<std::string> expected(result);
+  EXPECT_TRUE(expected.equals(std::string("expected")));
+  EXPECT_TRUE((!expected).equals("something else"));
 }
 
 TEST(ExpectationTest, convertibleTypesEqual) {
-	std::string result("expected");
-    Expectation<std::string> expected(result);
-    EXPECT_TRUE(expected.equals("expected"));
+  std::string result("expected");
+  Expectation<std::string> expected(result);
+  EXPECT_TRUE(expected.equals("expected"));
+}
+
+TEST(ExpectationTest, intTypesEqual) {
+  const int result = 24;
+  Expectation<int> expected(result);
+  EXPECT_TRUE(expected.equals(24));
+  EXPECT_TRUE((!expected).equals(25));
+}
+
+TEST(FloatExpectationTest, floatTypesEqual) {
+  const float result = 2.4f;
+  const float tolerance = 0.05f;
+  FloatExpectation<float> expected(result, tolerance);
+  EXPECT_TRUE(expected.almostEquals(2.41f));
+  EXPECT_TRUE((!expected).almostEquals(2.5f));
 }
