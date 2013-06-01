@@ -53,6 +53,55 @@ private:
 	bool reversed;
 };
 
+template<typename T>
+class FloatExpectation {
+public:
+    explicit FloatExpectation(const T& expected, const T& tolerance) :
+        expected(expected),
+        tolerance(tolerance),
+        reversed(false)
+    {
+    }
+
+    FloatExpectation(const FloatExpectation& rhs) :
+        expected(rhs.expected),
+        tolerance(rhs.tolerance),
+        reversed(rhs.reversed) {
+    }
+
+    template<class U>
+    bool almostEquals(const U& actual) const {
+        bool result = (upper() > actual) && (lower() < actual);
+        return result ^ reversed;
+    }
+
+    FloatExpectation& operator !() {
+        reversed = !reversed;
+        return *this;
+    }
+
+    const T& operator()() const {
+        return expected;
+    }
+
+    const T upper() const {
+        return expected + tolerance;
+    }
+    const T lower() const {
+        return expected - tolerance;
+    }
+
+private:
+    FloatExpectation& operator =(const FloatExpectation&);
+
+private:
+    const T& expected;
+    const T& tolerance;
+    bool reversed;
+
+};
+
+
 }
 
 #endif /* EXPECTATION_H_ */
