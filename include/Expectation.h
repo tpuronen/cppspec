@@ -84,13 +84,14 @@ public:
         return expected;
     }
 
-private:
     const T upper() const {
         return expected + tolerance;
     }
     const T lower() const {
         return expected - tolerance;
     }
+
+private:
     FloatExpectation& operator =(const FloatExpectation&);
 
 private:
