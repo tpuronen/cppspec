@@ -58,6 +58,11 @@ public: // Interface
 		return Expectation<T>(t);
 	}
 
+    template<typename T>
+    FloatExpectation<T> almostEqual(const T& t, const T& r) {
+        return FloatExpectation<T>(t, r);
+    }
+
 	Matcher contain(const std::string& regex) {
 		return Matcher(regex, Matcher::Search);
 	}
@@ -87,6 +92,11 @@ public:
     template<typename T>
     Expectation<T> equal(const T& t) {
         return Expectation<T>(t);
+    }
+
+    template<typename T>
+    FloatExpectation<T> almostEqual(const T& t, const T& r) {
+        return FloatExpectation<T>(t, r);
     }
 
     Matcher contain(const std::string& regex) {
