@@ -38,12 +38,13 @@ private:
                 spec = getSpec();
             }      
             decrementThreadCount();
+            cond.notify_all();
         }
         
         bool isReady() const {
             return threads == 0 && results.empty();
         }
-        
+
     private:
         void incrementThreadCount() {
             boost::lock_guard<boost::mutex> lock(threadCountLock);
@@ -85,11 +86,16 @@ public:
             boost::unique_lock<boost::mutex> lock(consumer.resultLock);
             while(consumer.results.empty()) {
                 consumer.cond.wait(lock);
+                if (consumer.isReady()) {
+                    break;
+                }
             }
-            SpecResult res = consumer.results.back();
-            consumer.results.pop_back();
-            lock.unlock();
-            reporter.addSpecification(res);
+            if (!consumer.results.empty()) {
+              SpecResult res = consumer.results.back();
+              consumer.results.pop_back();
+              lock.unlock();
+              reporter.addSpecification(res);
+            }
             if (consumer.isReady()) {
                 break;
             }
