@@ -33,7 +33,7 @@ public:
     bool anyBehaviorFailed() const;
 
 private:
-	std::string separateCamelCasedWords(const std::string& text);
+	std::string formatCamelCasedWordsAndUnderlines(const std::string& text);
 
 private:
     SpecDoxReporter(const SpecDoxReporter&);
