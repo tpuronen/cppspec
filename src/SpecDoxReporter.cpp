@@ -33,7 +33,7 @@ void SpecDoxReporter::addSpecification(const SpecResult &results) {
     int fail(0);
     outputStream << results.getSpecificationName() << ":" << "\n";
     for (std::vector<SpecResult::BehaviorResult>::const_iterator it = results.firstBehavior(); it != results.lastBehavior(); it++) {
-        outputStream << "  " << separateCamelCasedWords(it->name);
+        outputStream << "  " << formatCamelCasedWordsAndUnderlines(it->name);
         if (it->passed) {
             outputStream << "\n";
             ++pass;
@@ -50,14 +50,18 @@ bool SpecDoxReporter::anyBehaviorFailed() const {
     return anyFailed;
 }
     
-std::string SpecDoxReporter::separateCamelCasedWords(const std::string& text) {
+std::string SpecDoxReporter::formatCamelCasedWordsAndUnderlines(const std::string& text) {
 	std::string result;
 	std::string::iterator it = (const_cast<std::string&>(text)).begin();
 	while(it != text.end()) {
 		if(::isupper(*it)) {
 			result.append(" ");
 		}
-		result += ::tolower(*it);
+		if('_' == *it) {
+			result.append(" ");
+		} else {
+		  result += ::tolower(*it);
+    }
 		++it;
 	}
 	return result;
